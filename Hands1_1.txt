@@ -1,0 +1,16 @@
+SQL> select distinct idproduct from BB_basketitem
+order by idproduct;
+
+ IDPRODUCT
+----------
+         2
+         4
+         6
+         7
+         8
+         9
+        10
+
+ 7 rows selected 
+
+SQL> spool off

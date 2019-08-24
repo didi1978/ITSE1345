@@ -1,0 +1,78 @@
+SQL> CREATE OR REPLACE TRIGGER bb_ordcancel_trg AFTER
+  INSERT OR UPDATE OF idbasket ON bb_basketstatus 
+  FOR EACH ROW WHEN (new.idstage =4) 
+  DECLARE CURSOR stockupdate_cur IS
+  SELECT idproduct, quantity, idbasket, option1 
+  FROM bb_basketitem WHERE idbasket = :new.idbasket;
+  lv_chg_num NUMBER (3,1);
+  BEGIN
+    FOR stockupdate_rec IN stockupdate_cur
+    LOOP
+      IF stockupdate_rec.option1 = 1 THEN
+        lv_chg_num := (.5*stockupdate_rec.quantity);
+      ELSE
+        lv_chg_num := stockupdate_rec.quantity;
+      END IF;
+      UPDATE BB_product
+      SET Stock       = stock+lv_chg_num
+      WHERE idproduct = stockupdate_rec.idproduct;
+      UPDATE bb_basket
+      SET Orderplaced = 0
+      WHERE idbasket  = stockupdate_rec.idbasket;
+    END LOOP;
+END;
+/
+
+Trigger BB_ORDCANCEL_TRG compiled
+
+SQL> Select idbasket, orderplaced from BB_BASKET Where IDBASKET = 6;
+
+  IDBASKET ORDERPLACED
+---------- -----------
+         6           1
+
+SQL> /
+SQL> Select it.IDBASKET, it.QUANTITY, it.idproduct, p.Stock 
+From BB_PRODUCT p, BB_BASKETITEM it 
+Where p.IDPRODUCT = it.IDPRODUCT AND it.IDBASKET = 6;
+
+  IDBASKET   QUANTITY  IDPRODUCT      STOCK
+---------- ---------- ---------- ----------
+         6          2         10         50
+         6          1          2         15
+
+SQL> /
+SQL> INSERT INTO BB_BASKETSTATUS (IDSTATUS, IDBASKET, IDSTAGE, DTSTAGE)
+VALUES (bb_status_seq.NEXTVAL, 6,4,sysdate);
+
+1 row inserted.
+
+SQL> /
+SQL> Select idbasket, orderplaced from BB_BASKET Where IDBASKET = 6;
+
+  IDBASKET ORDERPLACED
+---------- -----------
+         6           0
+
+SQL> /
+SQL> Select it.IDBASKET, it.QUANTITY, it.idproduct, p.Stock 
+From BB_PRODUCT p, BB_BASKETITEM it 
+Where p.IDPRODUCT = it.IDPRODUCT AND it.IDBASKET = 6;
+
+  IDBASKET   QUANTITY  IDPRODUCT      STOCK
+---------- ---------- ---------- ----------
+         6          2         10         52
+         6          1          2         16
+
+SQL> /
+SQL> ROLLBACK;
+
+Rollback complete.
+
+SQL> /
+SQL> ALTER TRIGGER bb_ordcancel_trg DISABLE;
+
+Trigger BB_ORDCANCEL_TRG altered.
+
+SQL> /
+SQL> Spool OFF

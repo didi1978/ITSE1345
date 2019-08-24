@@ -1,0 +1,298 @@
+SQL> CREATE OR REPLACE PACKAGE lookup_pkg
+IS
+  FUNCTION status_desc_pf(
+      p_stage IN NUMBER)
+    RETURN VARCHAR2;
+END lookup_pkg;
+/
+
+Package LOOKUP_PKG compiled
+
+SQL> CREATE OR REPLACE PACKAGE BODY lookup_pkg
+IS
+  FUNCTION status_desc_pf(
+      p_stage IN NUMBER)
+    RETURN VARCHAR2
+  IS
+    lv_stage_txt VARCHAR2(30);
+  BEGIN
+    IF p_stage      = 1 THEN
+      lv_stage_txt := 'Order Submitted';
+    ELSIF p_stage   = 2 THEN
+      lv_stage_txt := 'Accepted, sent to shipping';
+    ELSIF p_stage   = 3 THEN
+      lv_stage_txt := 'Backordered';
+    ELSIF p_stage   = 4 THEN
+      lv_stage_txt := 'Cancelled';
+    ELSIF p_stage   = 5 THEN
+      lv_stage_txt := 'Shipped';
+    END IF;
+    RETURN lv_stage_txt;
+  END status_desc_pf;
+END lookup_pkg;
+/
+
+Package body LOOKUP_PKG compiled
+
+SQL> CREATE OR REPLACE PROCEDURE status_check_sp(
+    p_bask IN NUMBER,
+    p_stage OUT NUMBER,
+    p_desc OUT VARCHAR2)
+IS
+BEGIN
+  SELECT idstage INTO p_stage FROM bb_basketstatus WHERE idBasket = p_bask;
+  p_desc := lookup_pkg.status_desc_pf(p_stage);
+END status_check_sp;
+/
+
+Procedure STATUS_CHECK_SP compiled
+
+SQL> Select Status
+from user_objects
+where object_name= 'STATUS_CHECK_SP';
+
+STATUS
+-------
+VALID  
+
+SQL> /
+SQL> Select Status
+from user_objects
+where object_name= 'STATUS_CHECK_SP';
+
+STATUS
+-------
+VALID  
+
+SQL> /
+SQL> Select Object_Name, SUBOBJECT_NAME, Object_Type, Status
+from user_objects
+Order by Object_name;
+
+OBJECT_NAME                                                                                                                      SUBOBJECT_NAME                 OBJECT_TYPE         STATUS
+-------------------------------------------------------------------------------------------------------------------------------- ------------------------------ ------------------- -------
+APEX$_ACL                                                                                                                                                       TABLE               VALID  
+APEX$_ACL_IDX1                                                                                                                                                  INDEX               VALID  
+APEX$_ACL_PK                                                                                                                                                    INDEX               VALID  
+APEX$_ACL_T1                                                                                                                                                    TRIGGER             VALID  
+APEX$_WS_FILES                                                                                                                                                  TABLE               VALID  
+APEX$_WS_FILES_IDX1                                                                                                                                             INDEX               VALID  
+APEX$_WS_FILES_IDX2                                                                                                                                             INDEX               VALID  
+APEX$_WS_FILES_PK                                                                                                                                               INDEX               VALID  
+APEX$_WS_FILES_T1                                                                                                                                               TRIGGER             VALID  
+APEX$_WS_HISTORY                                                                                                                                                TABLE               VALID  
+APEX$_WS_HISTORY_IDX                                                                                                                                            INDEX               VALID  
+
+OBJECT_NAME                                                                                                                      SUBOBJECT_NAME                 OBJECT_TYPE         STATUS
+-------------------------------------------------------------------------------------------------------------------------------- ------------------------------ ------------------- -------
+APEX$_WS_LINKS                                                                                                                                                  TABLE               VALID  
+APEX$_WS_LINKS_IDX1                                                                                                                                             INDEX               VALID  
+APEX$_WS_LINKS_IDX2                                                                                                                                             INDEX               VALID  
+APEX$_WS_LINKS_PK                                                                                                                                               INDEX               VALID  
+APEX$_WS_LINKS_T1                                                                                                                                               TRIGGER             VALID  
+APEX$_WS_NOTES                                                                                                                                                  TABLE               VALID  
+APEX$_WS_NOTES_IDX1                                                                                                                                             INDEX               VALID  
+APEX$_WS_NOTES_IDX2                                                                                                                                             INDEX               VALID  
+APEX$_WS_NOTES_PK                                                                                                                                               INDEX               VALID  
+APEX$_WS_NOTES_T1                                                                                                                                               TRIGGER             VALID  
+APEX$_WS_ROWS                                                                                                                                                   TABLE               VALID  
+
+OBJECT_NAME                                                                                                                      SUBOBJECT_NAME                 OBJECT_TYPE         STATUS
+-------------------------------------------------------------------------------------------------------------------------------- ------------------------------ ------------------- -------
+APEX$_WS_ROWS_IDX                                                                                                                                               INDEX               VALID  
+APEX$_WS_ROWS_PK                                                                                                                                                INDEX               VALID  
+APEX$_WS_ROWS_T1                                                                                                                                                TRIGGER             VALID  
+APEX$_WS_TAGS                                                                                                                                                   TABLE               VALID  
+APEX$_WS_TAGS_IDX1                                                                                                                                              INDEX               VALID  
+APEX$_WS_TAGS_IDX2                                                                                                                                              INDEX               VALID  
+APEX$_WS_TAGS_PK                                                                                                                                                INDEX               VALID  
+APEX$_WS_TAGS_T1                                                                                                                                                TRIGGER             VALID  
+APEX$_WS_WEBPG_SECHIST_IDX1                                                                                                                                     INDEX               VALID  
+APEX$_WS_WEBPG_SECTIONS                                                                                                                                         TABLE               VALID  
+APEX$_WS_WEBPG_SECTIONS_PK                                                                                                                                      INDEX               VALID  
+
+OBJECT_NAME                                                                                                                      SUBOBJECT_NAME                 OBJECT_TYPE         STATUS
+-------------------------------------------------------------------------------------------------------------------------------- ------------------------------ ------------------- -------
+APEX$_WS_WEBPG_SECTIONS_T1                                                                                                                                      TRIGGER             VALID  
+APEX$_WS_WEBPG_SECTION_HISTORY                                                                                                                                  TABLE               VALID  
+BASKETSTATUS_PK                                                                                                                                                 INDEX               VALID  
+BASKET_ADD_SP                                                                                                                                                   PROCEDURE           INVALID
+BASKET_CONFIRM_SP                                                                                                                                               PROCEDURE           VALID  
+BASK_CALC_SP                                                                                                                                                    PROCEDURE           VALID  
+BB_AUDIT_LOGON                                                                                                                                                  TABLE               VALID  
+BB_BASKET                                                                                                                                                       TABLE               VALID  
+BB_BASKETITEM                                                                                                                                                   TABLE               VALID  
+BB_BASKETITEM_VU                                                                                                                                                VIEW                INVALID
+BB_BASKETSTATUS                                                                                                                                                 TABLE               VALID  
+
+OBJECT_NAME                                                                                                                      SUBOBJECT_NAME                 OBJECT_TYPE         STATUS
+-------------------------------------------------------------------------------------------------------------------------------- ------------------------------ ------------------- -------
+BB_BLOCKTEST                                                                                                                                                    TABLE               VALID  
+BB_DEPARTMENT                                                                                                                                                   TABLE               VALID  
+BB_IDBASKETITEM_SEQ                                                                                                                                             SEQUENCE            VALID  
+BB_IDBASKET_SEQ                                                                                                                                                 SEQUENCE            VALID  
+BB_POPTION_SEQ                                                                                                                                                  SEQUENCE            VALID  
+BB_PRODID_SEQ                                                                                                                                                   SEQUENCE            VALID  
+BB_PRODREQ_SEQ                                                                                                                                                  SEQUENCE            VALID  
+BB_PRODUCT                                                                                                                                                      TABLE               VALID  
+BB_PRODUCTOPTION                                                                                                                                                TABLE               VALID  
+BB_PRODUCTOPTIONCATEGORY                                                                                                                                        TABLE               VALID  
+BB_PRODUCTOPTIONDETAIL                                                                                                                                          TABLE               VALID  
+
+OBJECT_NAME                                                                                                                      SUBOBJECT_NAME                 OBJECT_TYPE         STATUS
+-------------------------------------------------------------------------------------------------------------------------------- ------------------------------ ------------------- -------
+BB_PRODUCT_REQUEST                                                                                                                                              TABLE               VALID  
+BB_PROD_SALES                                                                                                                                                   TABLE               VALID  
+BB_PROMO                                                                                                                                                        TABLE               VALID  
+BB_PROMOLIST                                                                                                                                                    TABLE               VALID  
+BB_SHIPPING                                                                                                                                                     TABLE               VALID  
+BB_SHIP_VU                                                                                                                                                      VIEW                VALID  
+BB_SHOPPER                                                                                                                                                      TABLE               VALID  
+BB_SHOPPER_SEQ                                                                                                                                                  SEQUENCE            VALID  
+BB_SHOP_SALES                                                                                                                                                   TABLE               VALID  
+BB_STATUS_SEQ                                                                                                                                                   SEQUENCE            VALID  
+BB_TAX                                                                                                                                                          TABLE               VALID  
+
+OBJECT_NAME                                                                                                                      SUBOBJECT_NAME                 OBJECT_TYPE         STATUS
+-------------------------------------------------------------------------------------------------------------------------------- ------------------------------ ------------------- -------
+BB_TEST1                                                                                                                                                        TABLE               VALID  
+BB_TEST2                                                                                                                                                        TABLE               VALID  
+BB_TRANS_LOG                                                                                                                                                    TABLE               VALID  
+BI_DEMO_USERS                                                                                                                                                   TRIGGER             VALID  
+BSKTITEM_ID_PK                                                                                                                                                  INDEX               VALID  
+BSKT_ID_PK                                                                                                                                                      INDEX               VALID  
+CK_LOGON_SF                                                                                                                                                     FUNCTION            INVALID
+CK_SALE_SF                                                                                                                                                      FUNCTION            INVALID
+CONTACTS                                                                                                                                                        TABLE               VALID  
+CONTACTS_CON_ID_PK                                                                                                                                              INDEX               VALID  
+CUSTOM_AUTH                                                                                                                                                     FUNCTION            VALID  
+
+OBJECT_NAME                                                                                                                      SUBOBJECT_NAME                 OBJECT_TYPE         STATUS
+-------------------------------------------------------------------------------------------------------------------------------- ------------------------------ ------------------- -------
+CUSTOM_HASH                                                                                                                                                     FUNCTION            VALID  
+DATE_CT_SF                                                                                                                                                      FUNCTION            VALID  
+DAY_ORD_SF                                                                                                                                                      FUNCTION            VALID  
+DEMO_CUSTOMERS                                                                                                                                                  TABLE               VALID  
+DEMO_CUSTOMERS_PK                                                                                                                                               INDEX               VALID  
+DEMO_CUST_NAME_IX                                                                                                                                               INDEX               VALID  
+DEMO_CUST_SEQ                                                                                                                                                   SEQUENCE            VALID  
+DEMO_ORDERS                                                                                                                                                     TABLE               VALID  
+DEMO_ORDER_ITEMS                                                                                                                                                TABLE               VALID  
+DEMO_ORDER_ITEMS_GET_PRICE                                                                                                                                      TRIGGER             VALID  
+DEMO_ORDER_ITEMS_PK                                                                                                                                             INDEX               VALID  
+
+OBJECT_NAME                                                                                                                      SUBOBJECT_NAME                 OBJECT_TYPE         STATUS
+-------------------------------------------------------------------------------------------------------------------------------- ------------------------------ ------------------- -------
+DEMO_ORDER_ITEMS_SEQ                                                                                                                                            SEQUENCE            VALID  
+DEMO_ORDER_PK                                                                                                                                                   INDEX               VALID  
+DEMO_ORD_CUSTOMER_IX                                                                                                                                            INDEX               VALID  
+DEMO_ORD_SEQ                                                                                                                                                    SEQUENCE            VALID  
+DEMO_PRODUCT_INFO                                                                                                                                               TABLE               VALID  
+DEMO_PRODUCT_INFO_PK                                                                                                                                            INDEX               VALID  
+DEMO_PROD_SEQ                                                                                                                                                   SEQUENCE            VALID  
+DEMO_STATES                                                                                                                                                     TABLE               VALID  
+DEMO_USERS                                                                                                                                                      TABLE               VALID  
+DEMO_USERS_PK                                                                                                                                                   INDEX               VALID  
+DEMO_USERS_SEQ                                                                                                                                                  SEQUENCE            VALID  
+
+OBJECT_NAME                                                                                                                      SUBOBJECT_NAME                 OBJECT_TYPE         STATUS
+-------------------------------------------------------------------------------------------------------------------------------- ------------------------------ ------------------- -------
+DEMO_USERS_T1                                                                                                                                                   TRIGGER             VALID  
+DEPT                                                                                                                                                            TABLE               VALID  
+DEPT_ID_PK                                                                                                                                                      INDEX               VALID  
+DOLLAR_FMT_SF                                                                                                                                                   FUNCTION            VALID  
+EMP                                                                                                                                                             TABLE               VALID  
+EMP_SP                                                                                                                                                          PROCEDURE           VALID  
+FCT_TEST1_SF                                                                                                                                                    FUNCTION            INVALID
+FCT_TEST2_SF                                                                                                                                                    FUNCTION            INVALID
+INSERT_DEMO_CUST                                                                                                                                                TRIGGER             VALID  
+INSERT_DEMO_ORDER_ITEMS                                                                                                                                         TRIGGER             VALID  
+INSERT_DEMO_PROD                                                                                                                                                TRIGGER             VALID  
+
+OBJECT_NAME                                                                                                                      SUBOBJECT_NAME                 OBJECT_TYPE         STATUS
+-------------------------------------------------------------------------------------------------------------------------------- ------------------------------ ------------------- -------
+LOCAL_NAMED                                                                                                                                                     PROCEDURE           VALID  
+LOGIN2_SP                                                                                                                                                       PROCEDURE           INVALID
+LOGIN_PKG                                                                                                                                                       PACKAGE             VALID  
+LOGIN_PKG                                                                                                                                                       PACKAGE BODY        INVALID
+LOGIN_SP                                                                                                                                                        PROCEDURE           INVALID
+LOOKUP_PKG                                                                                                                                                      PACKAGE             VALID  
+LOOKUP_PKG                                                                                                                                                      PACKAGE BODY        VALID  
+MEMBER_CK_SP                                                                                                                                                    PROCEDURE           INVALID
+MEMFMT1_SF                                                                                                                                                      FUNCTION            VALID  
+NUM_PURCH_SF                                                                                                                                                    FUNCTION            INVALID
+ORDER_INFO_PKG                                                                                                                                                  PACKAGE BODY        VALID  
+
+OBJECT_NAME                                                                                                                      SUBOBJECT_NAME                 OBJECT_TYPE         STATUS
+-------------------------------------------------------------------------------------------------------------------------------- ------------------------------ ------------------- -------
+ORDER_INFO_PKG                                                                                                                                                  PACKAGE             VALID  
+ORDER_TOTAL_SP                                                                                                                                                  PROCEDURE           INVALID
+ORDER_TOTAL_SP2                                                                                                                                                 PROCEDURE           INVALID
+ORD_SHIP_SF                                                                                                                                                     FUNCTION            INVALID
+PHONE_FMT_SP                                                                                                                                                    PROCEDURE           VALID  
+PRODATTR_ID_PK                                                                                                                                                  INDEX               VALID  
+PRODOPTCAT_ID_PK                                                                                                                                                INDEX               VALID  
+PRODOPTDET_ID_PK                                                                                                                                                INDEX               VALID  
+PRODREQ_ID_PK                                                                                                                                                   INDEX               VALID  
+PROD_ADD_SP                                                                                                                                                     PROCEDURE           INVALID
+PROD_ID_PK                                                                                                                                                      INDEX               VALID  
+
+OBJECT_NAME                                                                                                                      SUBOBJECT_NAME                 OBJECT_TYPE         STATUS
+-------------------------------------------------------------------------------------------------------------------------------- ------------------------------ ------------------- -------
+PROD_NAME_SP                                                                                                                                                    PROCEDURE           INVALID
+PROMO_SHIP_SP                                                                                                                                                   PROCEDURE           VALID  
+PROMO_TEST_SP                                                                                                                                                   PROCEDURE           VALID  
+PROMO_UK                                                                                                                                                        INDEX               VALID  
+RUN_NOCOPY_SP                                                                                                                                                   PROCEDURE           VALID  
+SHIP_CALC3_SF                                                                                                                                                   FUNCTION            VALID  
+SHIP_COST_SP                                                                                                                                                    PROCEDURE           VALID  
+SHIP_IDRANGE_PK                                                                                                                                                 INDEX               VALID  
+SHOPPER_ID_PK                                                                                                                                                   INDEX               VALID  
+SHOP_QUERY_PKG                                                                                                                                                  PACKAGE BODY        INVALID
+SHOP_QUERY_PKG                                                                                                                                                  PACKAGE             VALID  
+
+OBJECT_NAME                                                                                                                      SUBOBJECT_NAME                 OBJECT_TYPE         STATUS
+-------------------------------------------------------------------------------------------------------------------------------- ------------------------------ ------------------- -------
+STATUS_CHECK_SP                                                                                                                                                 PROCEDURE           VALID  
+STATUS_DESC_SF                                                                                                                                                  FUNCTION            VALID  
+STATUS_SHIP_SP                                                                                                                                                  PROCEDURE           INVALID
+STATUS_SP                                                                                                                                                       PROCEDURE           VALID  
+STOCK_CK_SP                                                                                                                                                     PROCEDURE           VALID  
+SUB_CALC_SF                                                                                                                                                     FUNCTION            VALID  
+SYS_C008287                                                                                                                                                     INDEX               VALID  
+SYS_C008289                                                                                                                                                     INDEX               VALID  
+SYS_LOB0000022515C00007$$                                                                                                                                       LOB                 VALID  
+SYS_LOB0000022530C00007$$                                                                                                                                       LOB                 VALID  
+SYS_LOB0000022530C00008$$                                                                                                                                       LOB                 VALID  
+
+OBJECT_NAME                                                                                                                      SUBOBJECT_NAME                 OBJECT_TYPE         STATUS
+-------------------------------------------------------------------------------------------------------------------------------- ------------------------------ ------------------- -------
+SYS_LOB0000022536C00165$$                                                                                                                                       LOB                 VALID  
+SYS_LOB0000022536C00166$$                                                                                                                                       LOB                 VALID  
+SYS_LOB0000022543C00007$$                                                                                                                                       LOB                 VALID  
+SYS_LOB0000022551C00010$$                                                                                                                                       LOB                 VALID  
+SYS_LOB0000022555C00008$$                                                                                                                                       LOB                 VALID  
+SYS_LOB0000022555C00009$$                                                                                                                                       LOB                 VALID  
+TAX_CALC2_SF                                                                                                                                                    FUNCTION            VALID  
+TAX_CALC_SF                                                                                                                                                     FUNCTION            INVALID
+TAX_COST_SP                                                                                                                                                     PROCEDURE           INVALID
+TAX_IDSTATE_PK                                                                                                                                                  INDEX               VALID  
+TAX_RATE_PKG                                                                                                                                                    PACKAGE BODY        INVALID
+
+OBJECT_NAME                                                                                                                      SUBOBJECT_NAME                 OBJECT_TYPE         STATUS
+-------------------------------------------------------------------------------------------------------------------------------- ------------------------------ ------------------- -------
+TAX_RATE_PKG                                                                                                                                                    PACKAGE             VALID  
+TC_TEST_SP1                                                                                                                                                     PROCEDURE           VALID  
+TC_TEST_SP2                                                                                                                                                     PROCEDURE           VALID  
+TEST_NOCOPY_SP                                                                                                                                                  PROCEDURE           VALID  
+TEST_OUT_SF                                                                                                                                                     FUNCTION            VALID  
+THEATER                                                                                                                                                         TABLE               VALID  
+THEATER_ROWNM_SEQ                                                                                                                                               SEQUENCE            VALID  
+TOT_PURCH_SF                                                                                                                                                    FUNCTION            INVALID
+UPDATE_ORDER_TOTAL                                                                                                                                              TRIGGER             VALID  
+
+ 174 rows selected 
+
+SQL> /
+
+SQL> Spool OFF

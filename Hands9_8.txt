@@ -1,0 +1,83 @@
+SQL> CREATE TABLE BB_PRODCHG_AUDIT
+  (
+    USER_ID       VARCHAR2(50),
+    CHG_DATE      DATE,
+    PRODUCT_ID    NUMBER (4,0),
+    PRODNAME_OLD  VARCHAR2(30),
+    PRODNAME_NEW  VARCHAR2(30),
+    PRICE_OLD     NUMBER (6,2),
+    PRICE_NEW     NUMBER (6,2),
+    SALESTART_OLD DATE,
+    SALESTART_NEW DATE,
+    SALEEND_OLD   DATE,
+    SALEEND_NEW   DATE,
+    SALEPRICE_OLD NUMBER (6,2),
+    SALEPRICE_NEW NUMBER (6,2)
+  );
+
+Table BB_PRODCHG_AUDIT created.
+
+SQL> /
+SQL> CREATE OR REPLACE TRIGGER bb_audit_trg AFTER
+  UPDATE OF PRODUCTNAME,
+    PRICE,
+    SALESTART,
+    SALEEND,
+    SALEPRICE ON BB_PRODUCT FOR EACH ROW BEGIN
+  INSERT
+  INTO BB_PRODCHG_AUDIT VALUES
+    (
+      SYS_CONTEXT ('USERENV','OS_USER'),
+      sysdate,
+      :new.idproduct,
+      :old.productname,
+      :new.productname,
+      :old.price,
+      :new.price,
+      :old.salestart,
+      :new.salestart,
+      :old.saleend,
+      :new.saleend,
+      :old.saleprice,
+      :new.saleprice
+    );
+END;
+/
+
+Trigger BB_AUDIT_TRG compiled
+
+SQL> Select IDPRODUCT, PRODUCTNAME, PRICE, SALESTART, SALEEND, SALEPRICE
+FROM BB_PRODUCT WHERE IDPRODUCT = 10;
+
+ IDPRODUCT PRODUCTNAME                    PRICE SALESTART SALEEND    SALEPRICE
+---------- ------------------------- ---------- --------- --------- ----------
+        10 Espresso                          10                               
+
+SQL> /
+SQL> UPDATE BB_PRODUCT
+SET SALESTART   ='05-May-2012',
+  SALEEND       = '12-May-2012',
+  SALEPRICE     =9
+WHERE IDPRODUCT =10;
+
+1 row updated.
+
+SQL> /
+SQL> Select * from BB_PRODCHG_AUDIT;
+
+USER_ID                                            CHG_DATE  PRODUCT_ID PRODNAME_OLD                   PRODNAME_NEW                    PRICE_OLD  PRICE_NEW SALESTART_OLD SALESTART_NEW SALEEND_OLD SALEEND_NEW SALEPRICE_OLD SALEPRICE_NEW
+-------------------------------------------------- --------- ---------- ------------------------------ ------------------------------ ---------- ---------- ------------- ------------- ----------- ----------- ------------- -------------
+ACC_Oracle_AD                                      21-JUL-19         10 Espresso                       Espresso                               10         10               05-MAY-12                 12-MAY-12                             9
+
+SQL> /
+SQL> ROLLBACK;
+
+Rollback complete.
+
+SQL> /
+SQL> ALTER TRIGGER bb_audit_trg DISABLE;
+
+Trigger BB_AUDIT_TRG altered.
+
+SQL> /
+SQL> Spool OFF

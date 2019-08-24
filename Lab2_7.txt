@@ -1,0 +1,24 @@
+SQL> SET SERVEROUTPUT ON
+SQL> DECLARE
+  TYPE st_cr IS TABLE OF stu_crse%rowtype;
+  tab_sc st_cr;
+  cour stu_crse.crse_id%type:='COSC1315';
+BEGIN
+  SELECT * bulk collect INTO tab_sc FROM stu_crse;
+  FOR i IN 1..tab_sc.count
+  LOOP
+    IF tab_sc(i).crse_id=cour THEN
+      dbms_output.put_line('Student: '||tab_sc(i).stu_id||' is in the course '||cour);
+    END IF;
+  END LOOP;
+  dbms_output.put_line('Rest students are not in the course '||cour);
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+Student: 10004 is in the course COSC1315
+Student: 10007 is in the course COSC1315
+Rest students are not in the course COSC1315
+
+SQL> Spool OFF

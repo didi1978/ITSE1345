@@ -1,0 +1,112 @@
+SQL> CREATE OR REPLACE PACKAGE shop_query_pkg
+IS
+  PROCEDURE lookup_shopper_pp(
+      p_shopperid IN bb_shopper.idshopper%type,
+      lv_name OUT VARCHAR2,
+      lv_city OUT bb_shopper.city%type,
+      lv_state OUT bb_shopper.state%type,
+      lv_phone OUT bb_shopper.phone%type);
+  PROCEDURE lookup_shopper_pp(
+      p_last IN bb_shopper.lastname%type,
+      lv_name OUT VARCHAR2,
+      lv_city OUT bb_shopper.city%type,
+      lv_state OUT bb_shopper.state%type,
+      lv_phone OUT bb_shopper.phone%type);
+END;
+/
+
+Package SHOP_QUERY_PKG compiled
+
+SQL> CREATE OR REPLACE PACKAGE BODY shop_query_pkg
+IS
+  PROCEDURE lookup_shopper_pp(
+      p_shopperid IN bb_shopper.idshopper%type,
+      lv_name OUT VARCHAR2,
+      lv_city OUT bb_shopper.city%type,
+      lv_state OUT bb_shopper.state%type,
+      lv_phone OUT bb_shopper.phone%type)
+  IS
+  BEGIN
+    SELECT firstname||' '||lastname,
+      city,
+      state,
+      phone
+    INTO lv_name,
+      lv_city,
+      lv_state,
+      lv_phone
+    FROM bb_shopper
+    WHERE idshopper = p_shopperid;
+    DBMS_OUTPUT.PUT_LINE ('Shopper id#'||p_shopperid||' lookup results- '
+    ||'Name: '||lv_name||', City: '||lv_city||', State: '||lv_state||', Phone: '||lv_phone);
+  EXCEPTION
+  WHEN NO_DATA_FOUND THEN
+  DBMS_OUTPUT.PUT_LINE ('Invalid shopper id.');
+  END lookup_shopper_pp;
+  
+  PROCEDURE lookup_shopper_pp(
+      p_last IN bb_shopper.lastname%type,
+      lv_name OUT VARCHAR2,
+      lv_city OUT bb_shopper.city%type,
+      lv_state OUT bb_shopper.state%type,
+      lv_phone OUT bb_shopper.phone%type)
+  IS
+  BEGIN
+    SELECT firstname||' '||lastname,
+      city,
+      state,
+      phone
+    INTO lv_name,
+      lv_city,
+      lv_state,
+      lv_phone
+    FROM bb_shopper
+    WHERE lastname = p_last;
+    DBMS_OUTPUT.PUT_LINE ('Last Name '||p_last||' lookup results- '
+    ||'Name: '||lv_name||', City: '||lv_city||', State: '||lv_state||', Phone: '||lv_phone);
+  EXCEPTION
+  WHEN NO_DATA_FOUND THEN
+  DBMS_OUTPUT.PUT_LINE ('Invalid Last Name.');
+  END lookup_shopper_pp;
+END;
+/
+
+Package body SHOP_QUERY_PKG compiled
+
+SQL> SET SERVEROUTPUT ON
+SQL> DECLARE
+  lv_id bb_shopper.idshopper%type:=23;
+  lv_name VARCHAR2(30);
+  lv_city bb_shopper.city%type;
+  lv_state bb_shopper.state%type;
+  lv_phone bb_shopper.phone%type;
+BEGIN
+  shop_query_pkg.lookup_shopper_pp(
+  lv_id, lv_name, lv_city, lv_state, lv_phone);
+
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+Shopper id#23 lookup results- Name: Kenny Ratmans, City: South Park, State: NC, Phone: 9015680902
+
+SQL> SET SERVEROUTPUT ON
+SQL> DECLARE
+  lv_last bb_shopper.lastname%type:='Ratmans';
+  lv_name VARCHAR2(30);
+  lv_city bb_shopper.city%type;
+  lv_state bb_shopper.state%type;
+  lv_phone bb_shopper.phone%type;
+BEGIN
+  shop_query_pkg.lookup_shopper_pp(
+  lv_last, lv_name, lv_city, lv_state, lv_phone);
+
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+Last Name Ratmans lookup results- Name: Kenny Ratmans, City: South Park, State: NC, Phone: 9015680902
+
+SQL> Spool OFF

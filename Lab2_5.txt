@@ -1,0 +1,26 @@
+SQL> SET SERVEROUTPUT ON
+SQL> DECLARE
+  cc_crseid course.crse_id%type;
+  CURSOR cc IS
+    SELECT COUNT(DISTINCT crse_id) FROM stu_crse;
+BEGIN
+  OPEN cc;
+  LOOP
+    FETCH cc INTO cc_crseid;
+    EXIT
+  WHEN cc%notfound;
+    IF cc_crseid<10 THEN
+      dbms_output.put_line('Less than 10 courses established.');
+      ELSE
+        dbms_output.put_line('More than 10 courses have been established.');
+    END IF;
+  END LOOP;
+  CLOSE cc;
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+Less than 10 courses established.
+
+SQL> Spool OFF

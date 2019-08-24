@@ -1,0 +1,76 @@
+SQL> SET SERVEROUTPUT ON
+SQL> DECLARE
+  lv_ship_date bb_basketstatus.dtstage%type;
+  lv_shipper_txt bb_basketstatus.shipper%type;
+  lv_ship_nm bb_basketstatus.shippingnum%type;
+  lv_bask_nm bb_basketstatus.idbasket%type :=3;
+BEGIN
+  SELECT dtstage,
+    shipper,
+    shippingnum
+  INTO lv_ship_date,
+    lv_shipper_txt,
+    lv_ship_nm
+  FROM bb_basketstatus
+  WHERE idbasket=lv_bask_nm
+  AND idstage   =5;
+  DBMS_OUTPUT.PUT_LINE('Date Shipped: '||lv_ship_date);
+  DBMS_OUTPUT.PUT_LINE('Shipper: '||lv_shipper_txt);
+  DBMS_OUTPUT.PUT_LINE('Shipping#: '||lv_ship_nm);
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+Date Shipped: 25-JAN-12
+Shipper: UPS
+Shipping#: ZW845584GD89H569
+
+SQL> DECLARE
+  lv_ship_date bb_basketstatus.dtstage%type;
+  lv_shipper_txt bb_basketstatus.shipper%type;
+  lv_ship_nm bb_basketstatus.shippingnum%type;
+  lv_bask_nm bb_basketstatus.idbasket%type :=7;
+BEGIN
+  SELECT dtstage,
+    shipper,
+    shippingnum
+  INTO lv_ship_date,
+    lv_shipper_txt,
+    lv_ship_nm
+  FROM bb_basketstatus
+  WHERE idbasket=lv_bask_nm
+  AND idstage   =5;
+  DBMS_OUTPUT.PUT_LINE('Date Shipped: '||lv_ship_date);
+  DBMS_OUTPUT.PUT_LINE('Shipper: '||lv_shipper_txt);
+  DBMS_OUTPUT.PUT_LINE('Shipping#: '||lv_ship_nm);
+END;
+/
+
+Error starting at line : 23 in command -
+DECLARE
+  lv_ship_date bb_basketstatus.dtstage%type;
+  lv_shipper_txt bb_basketstatus.shipper%type;
+  lv_ship_nm bb_basketstatus.shippingnum%type;
+  lv_bask_nm bb_basketstatus.idbasket%type :=7;
+BEGIN
+  SELECT dtstage,
+    shipper,
+    shippingnum
+  INTO lv_ship_date,
+    lv_shipper_txt,
+    lv_ship_nm
+  FROM bb_basketstatus
+  WHERE idbasket=lv_bask_nm
+  AND idstage   =5;
+  DBMS_OUTPUT.PUT_LINE('Date Shipped: '||lv_ship_date);
+  DBMS_OUTPUT.PUT_LINE('Shipper: '||lv_shipper_txt);
+  DBMS_OUTPUT.PUT_LINE('Shipping#: '||lv_ship_nm);
+END;
+Error report -
+ORA-01403: no data found
+ORA-06512: at line 7
+01403. 00000 -  "no data found"
+*Cause:    No data was found from the objects.
+*Action:   There was no data from the objects which may be due to end of fetch.
+SQL> spool off

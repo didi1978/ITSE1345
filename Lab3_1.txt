@@ -1,0 +1,29 @@
+SQL> CREATE OR REPLACE PROCEDURE emp_sp(
+    p_emp_num IN emp.empno%type)
+IS
+  rec_emp emp%ROWtype;
+BEGIN
+  SELECT * INTO rec_emp from EMP WHERE empno=p_emp_num;
+  dbms_output.put_line('Employee#'||rec_emp.empno||', name: '||rec_emp.ENAME||
+  ', Job title: '||rec_emp.JOB||', Manager: '||rec_emp.MGR);
+EXCEPTION
+WHEN NO_DATA_FOUND THEN
+  dbms_output.put_line('Employee#'||p_emp_num||' not found.');
+END emp_sp;
+/
+
+Procedure EMP_SP compiled
+
+SQL> SET SERVEROUTPUT ON
+SQL> BEGIN 
+emp_sp(7698);
+emp_sp(7901);
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+Employee#7698, name: BLAKE, Job title: MANAGER, Manager: 7839
+Employee#7901 not found.
+
+SQL> Spool OFF

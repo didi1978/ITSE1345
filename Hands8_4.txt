@@ -1,0 +1,119 @@
+SQL> CREATE DATABASE LINK dblink2
+USING 'xe';
+
+Database link DBLINK2 created.
+
+SQL> /
+SQL> CREATE OR REPLACE FUNCTION status_desc_sf
+  (p_stage NUMBER)
+  RETURN VARCHAR2
+ IS
+  lv_stage_txt VARCHAR2(30);
+BEGIN
+ IF p_stage = 1 THEN
+   lv_stage_txt := 'Order Submitted';
+ ELSIF p_stage = 2 THEN
+   lv_stage_txt := 'Accepted, sent to shipping';
+ ELSIF p_stage = 3 THEN
+   lv_stage_txt := 'Backordered';
+ ELSIF p_stage = 4 THEN
+   lv_stage_txt := 'Cancelled';
+ ELSIF p_stage = 5 THEN
+   lv_stage_txt := 'Shipped';
+ END IF;
+ RETURN lv_stage_txt;
+END;
+/
+
+Function STATUS_DESC_SF compiled
+
+SQL> CREATE OR REPLACE PROCEDURE status_check_sp
+  (p_bask IN NUMBER,
+   p_stage OUT NUMBER,
+   p_desc OUT VARCHAR2)
+ IS
+BEGIN
+  SELECT idstage
+   INTO p_stage
+   FROM bb_basketstatus
+   WHERE idBasket = p_bask;
+  p_desc := status_desc_sf@dblink2(p_stage);
+END;
+/
+
+Procedure STATUS_CHECK_SP compiled
+
+SQL> Select Object_name, status from user_objects
+where object_name = 'STATUS_CHECK_SP';
+
+OBJECT_NAME                                                                                                                      STATUS
+-------------------------------------------------------------------------------------------------------------------------------- -------
+STATUS_CHECK_SP                                                                                                                  VALID  
+
+SQL> /
+SQL> --Status Check after mod idstage column
+SQL> Select Object_name, status from user_objects
+where object_name = 'STATUS_CHECK_SP';
+
+OBJECT_NAME                                                                                                                      STATUS
+-------------------------------------------------------------------------------------------------------------------------------- -------
+STATUS_CHECK_SP                                                                                                                  VALID  
+
+SQL> /
+SQL> --Try to call the procedure and verify its status again
+SQL> DECLARE
+  lv_stage NUMBER;
+  lv_desc  VARCHAR2 (30);
+BEGIN
+  status_check_sp (13,lv_stage, lv_desc);
+  DBMS_OUTPUT.PUT_LINE(lv_stage);
+  DBMS_OUTPUT.PUT_LINE(lv_desc);
+END;
+/
+
+Error starting at line : 3 in command -
+DECLARE
+  lv_stage NUMBER;
+  lv_desc  VARCHAR2 (30);
+BEGIN
+  status_check_sp (13,lv_stage, lv_desc);
+  DBMS_OUTPUT.PUT_LINE(lv_stage);
+  DBMS_OUTPUT.PUT_LINE(lv_desc);
+END;
+Error report -
+ORA-04062: timestamp of function "BREWBEANS.STATUS_DESC_SF" has been changed
+ORA-06512: at "BREWBEANS.STATUS_CHECK_SP", line 11
+ORA-06512: at line 5
+04062. 00000 -  "%s of %s has been changed"
+*Cause:    Attempt to execute a stored procedure to serve
+           an RPC stub which specifies a timestamp or signature that is
+           different from the current timestamp/signature of the procedure.
+*Action:   Recompile the caller in order to pick up the new timestamp.
+
+SQL> SELECT Object_Name, Status
+From user_objects
+Where object_name in ('STATUS_CHECK_SP', 'STATUS_DESC_SF');
+
+OBJECT_NAME                                                                                                                      STATUS
+-------------------------------------------------------------------------------------------------------------------------------- -------
+STATUS_CHECK_SP                                                                                                                  INVALID
+STATUS_DESC_SF                                                                                                                   VALID  
+
+SQL> /
+SQL> --Call the procedure a second time.
+SQL> DECLARE
+  lv_stage NUMBER;
+  lv_desc  VARCHAR2 (30);
+BEGIN
+  status_check_sp (13,lv_stage, lv_desc);
+  DBMS_OUTPUT.PUT_LINE(lv_stage);
+  DBMS_OUTPUT.PUT_LINE(lv_desc);
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+6
+Credit Card Not Approved.
+
+SQL> Spool off

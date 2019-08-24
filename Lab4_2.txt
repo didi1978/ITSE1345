@@ -1,0 +1,81 @@
+SQL> CREATE OR REPLACE PACKAGE Hospital
+AS
+  TYPE t_PatRec IS RECORD
+    ( pat_Nbr treatment.pat_nbr%TYPE,
+      Trt_Procedure treatment.trt_procedure%type,
+      Phys_ID treatment.phys_id%type,
+      Phys_Name physician.phys_name%type,
+      Phys_Specialty physician.phys_specialty%type );
+  
+  TYPE t_PatTrt IS TABLE OF t_PatRec INDEX BY PLS_INTEGER;
+  
+  PROCEDURE BuildPatTbl (p_trt OUT t_PatTrt, p_num_rows IN OUT NUMBER);
+  
+  FUNCTION FindPatient (p_pat_id IN NUMBER) RETURN BOOLEAN;
+  
+  FUNCTION FindPatient (p_pat_name IN VARCHAR2) RETURN BOOLEAN;
+  
+  PROCEDURE NewPhys (v_physid IN NUMBER,
+                     v_physname IN VARCHAR2,
+                     v_physphone IN VARCHAR2,
+                     v_physpecialty IN VARCHAR2);
+  
+  e_DupPhysFound EXCEPTION;
+END Hospital;
+/
+
+Package HOSPITAL compiled
+
+SQL> CREATE OR REPLACE PACKAGE BODY Hospital AS
+  PROCEDURE BuildPatTbl(p_trt OUT t_PatTrt, p_num_rows IN OUT NUMBER)
+  IS
+  BEGIN
+    SELECT tr.pat_nbr, tr.trt_procedure, tr.phys_id, py.phys_name, py.phys_specialty
+    BULK COLLECT INTO p_trt
+    FROM TREATMENT tr, PHYSICIAN py
+    WHERE tr.phys_id = py.phys_id;
+    p_num_rows := SQL%ROWCOUNT;
+  END BuildPatTbl;
+  
+  FUNCTION FindPatient (p_pat_id IN NUMBER) RETURN BOOLEAN
+  IS
+    lv_row_find NUMBER;
+  BEGIN
+    SELECT COUNT(*) INTO lv_row_find FROM Patient WHERE pat_nbr = p_pat_id;
+    IF (lv_row_find = 0) THEN RETURN FALSE;
+    ELSE RETURN TRUE;
+    END IF;
+  END FindPatient;
+  
+  FUNCTION FindPatient (p_pat_name IN VARCHAR2) RETURN BOOLEAN
+  IS
+    lv_row_find NUMBER;
+  BEGIN
+    SELECT COUNT(*) INTO lv_row_find FROM Patient WHERE pat_name = p_pat_name;
+    IF (lv_row_find = 0) THEN RETURN FALSE;
+    ELSE RETURN TRUE;
+    END IF;
+  END FindPatient;
+  
+  PROCEDURE NewPhys (v_physid IN NUMBER,
+                     v_physname IN VARCHAR2,
+                     v_physphone IN VARCHAR2,
+                     v_physpecialty IN VARCHAR2)
+  IS
+    lv_row_found NUMBER;
+  BEGIN
+    SELECT COUNT(*) INTO lv_row_found FROM Physician WHERE phys_name = v_physname;
+    IF (lv_row_found = 0) THEN
+      INSERT INTO PHYSICIAN (phys_id, phys_name, phys_phone, phys_specialty)
+      VALUES (v_physid, v_physname, v_physphone, v_physpecialty);
+    ELSE
+      RAISE e_DupPhysFound;
+    END IF;
+  END NewPhys;
+  
+END Hospital;
+/
+
+Package body HOSPITAL compiled
+
+SQL> Spool OFF

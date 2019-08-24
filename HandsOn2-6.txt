@@ -1,0 +1,67 @@
+SQL> SET SERVEROUTPUT ON
+SQL> DECLARE
+  tt_available  NUMBER(8,2) ;
+  item_price    NUMBER(8,2) := 0;
+  tt_amount     NUMBER(8,2) := 0;
+  lv_loopnum    NUMBER(8,2) := 0;
+  lv_product    BB_PRODUCT.IDPRODUCT%Type;
+BEGIN
+  tt_available := &Enter_amount_to_spend;
+  lv_product := &Enter_ProductID;
+  DBMS_OUTPUT.PUT_LINE('Available Amount to Spend: ' || tt_available);
+  SELECT price INTO item_price FROM BB_PRODUCT WHERE IDPRODUCT = lv_product;
+  DBMS_OUTPUT.PUT_LINE('Item Price Per Unit: ' || item_price);
+  WHILE tt_available >= tt_amount
+  LOOP
+    lv_loopnum := lv_loopnum   + 1;
+    tt_amount  := item_price * lv_loopnum;
+  END LOOP;
+  DBMS_OUTPUT.PUT_LINE('Number of Items Purchased: ' ||(lv_loopnum-1) );
+  DBMS_OUTPUT.PUT_LINE('Total Amount Spent: '|| (lv_loopnum-1) * item_price);
+END;
+/
+old:DECLARE
+  tt_available  NUMBER(8,2) := &Enter_amount_to_spend;
+  item_price    NUMBER(8,2) := 0;
+  tt_amount     NUMBER(8,2) := 0;
+  lv_loopnum    NUMBER(8,2) := 0;
+  lv_product    BB_PRODUCT.IDPRODUCT%Type := &Enter_ProductID;
+BEGIN
+  DBMS_OUTPUT.PUT_LINE('Available Amount to Spend: ' || tt_available);
+  SELECT price INTO item_price FROM BB_PRODUCT WHERE IDPRODUCT = lv_product;
+  DBMS_OUTPUT.PUT_LINE('Item Price Per Unit: ' || item_price);
+  WHILE tt_available >= tt_amount
+  LOOP
+    lv_loopnum := lv_loopnum   + 1;
+    tt_amount  := item_price * lv_loopnum;
+  END LOOP;
+  DBMS_OUTPUT.PUT_LINE('Number of Items Purchased: ' ||(lv_loopnum-1) );
+  DBMS_OUTPUT.PUT_LINE('Total Amount Spent: '|| (lv_loopnum-1) * item_price);
+END;
+new:DECLARE
+  tt_available  NUMBER(8,2) := 120;
+  item_price    NUMBER(8,2) := 0;
+  tt_amount     NUMBER(8,2) := 0;
+  lv_loopnum    NUMBER(8,2) := 0;
+  lv_product    BB_PRODUCT.IDPRODUCT%Type := 9;
+BEGIN
+  DBMS_OUTPUT.PUT_LINE('Available Amount to Spend: ' || tt_available);
+  SELECT price INTO item_price FROM BB_PRODUCT WHERE IDPRODUCT = lv_product;
+  DBMS_OUTPUT.PUT_LINE('Item Price Per Unit: ' || item_price);
+  WHILE tt_available >= tt_amount
+  LOOP
+    lv_loopnum := lv_loopnum   + 1;
+    tt_amount  := item_price * lv_loopnum;
+  END LOOP;
+  DBMS_OUTPUT.PUT_LINE('Number of Items Purchased: ' ||(lv_loopnum-1) );
+  DBMS_OUTPUT.PUT_LINE('Total Amount Spent: '|| (lv_loopnum-1) * item_price);
+END;
+
+PL/SQL procedure successfully completed.
+
+Available Amount to Spend: 120
+Item Price Per Unit: 10
+Number of Items Purchased: 12
+Total Amount Spent: 120
+
+SQL> Spool Off

@@ -1,0 +1,112 @@
+SQL> DESCRIBE USER_OBJECTS;
+
+Name           Null Type          
+-------------- ---- ------------- 
+OBJECT_NAME         VARCHAR2(128) 
+SUBOBJECT_NAME      VARCHAR2(30)  
+OBJECT_ID           NUMBER        
+DATA_OBJECT_ID      NUMBER        
+OBJECT_TYPE         VARCHAR2(19)  
+CREATED             DATE          
+LAST_DDL_TIME       DATE          
+TIMESTAMP           VARCHAR2(19)  
+STATUS              VARCHAR2(7)   
+TEMPORARY           VARCHAR2(1)   
+GENERATED           VARCHAR2(1)   
+SECONDARY           VARCHAR2(1)   
+NAMESPACE           NUMBER        
+EDITION_NAME        VARCHAR2(30)  
+SQL> /
+SQL> Select object_name, status, TIMESTAMP
+from user_objects
+Where OBJECT_TYPE='PROCEDURE';
+
+OBJECT_NAME                                                                                                                      STATUS  TIMESTAMP         
+-------------------------------------------------------------------------------------------------------------------------------- ------- -------------------
+PROD_NAME_SP                                                                                                                     INVALID 2019-06-21:03:31:54
+TAX_COST_SP                                                                                                                      INVALID 2019-06-22:01:38:20
+PROD_ADD_SP                                                                                                                      INVALID 2019-06-22:00:38:00
+STATUS_SP                                                                                                                        VALID   2019-07-16:13:44:55
+SHIP_COST_SP                                                                                                                     VALID   2019-07-16:13:44:54
+BASKET_CONFIRM_SP                                                                                                                VALID   2019-07-16:14:07:36
+STATUS_SHIP_SP                                                                                                                   INVALID 2019-06-23:00:44:04
+ORDER_TOTAL_SP                                                                                                                   INVALID 2019-07-16:15:23:08
+ORDER_TOTAL_SP2                                                                                                                  INVALID 2019-07-16:15:23:06
+STOCK_CK_SP                                                                                                                      VALID   2019-07-16:13:44:54
+LOGIN2_SP                                                                                                                        INVALID 2019-07-16:13:44:55
+
+OBJECT_NAME                                                                                                                      STATUS  TIMESTAMP         
+-------------------------------------------------------------------------------------------------------------------------------- ------- -------------------
+BASK_CALC_SP                                                                                                                     VALID   2019-07-16:15:26:23
+PROMO_TEST_SP                                                                                                                    VALID   2019-07-16:13:44:55
+TC_TEST_SP2                                                                                                                      VALID   2019-07-16:13:44:55
+TC_TEST_SP1                                                                                                                      VALID   2019-07-16:13:44:55
+PHONE_FMT_SP                                                                                                                     VALID   2019-07-16:13:44:55
+PROMO_SHIP_SP                                                                                                                    VALID   2019-07-16:15:28:55
+MEMBER_CK_SP                                                                                                                     INVALID 2019-07-16:13:44:54
+BASKET_ADD_SP                                                                                                                    INVALID 2019-07-16:14:07:33
+LOGIN_SP                                                                                                                         INVALID 2019-07-16:13:44:54
+TEST_NOCOPY_SP                                                                                                                   VALID   2019-07-16:13:44:55
+RUN_NOCOPY_SP                                                                                                                    VALID   2019-07-16:13:44:55
+
+OBJECT_NAME                                                                                                                      STATUS  TIMESTAMP         
+-------------------------------------------------------------------------------------------------------------------------------- ------- -------------------
+LOCAL_NAMED                                                                                                                      VALID   2019-06-04:16:58:03
+EMP_SP                                                                                                                           VALID   2019-07-01:11:05:02
+
+ 24 rows selected 
+
+SQL> /
+SQL> Describe USer_Dependencies;
+
+Name                 Null     Type          
+-------------------- -------- ------------- 
+NAME                 NOT NULL VARCHAR2(30)  
+TYPE                          VARCHAR2(18)  
+REFERENCED_OWNER              VARCHAR2(30)  
+REFERENCED_NAME               VARCHAR2(64)  
+REFERENCED_TYPE               VARCHAR2(18)  
+REFERENCED_LINK_NAME          VARCHAR2(128) 
+SCHEMAID                      NUMBER        
+DEPENDENCY_TYPE               VARCHAR2(4)   
+SQL> /
+SQL> Select referenced_name, Referenced_type, referenced_owner
+from SYS.USER_DEPENDENCIES
+where NAME ='ORDER_TOTAL_SP2';
+
+REFERENCED_NAME                                                  REFERENCED_TYPE    REFERENCED_OWNER             
+---------------------------------------------------------------- ------------------ ------------------------------
+STANDARD                                                         PACKAGE            SYS                           
+SYS_STUB_FOR_PURITY_ANALYSIS                                     PACKAGE            SYS                           
+BB_BASKETITEM                                                    TABLE              BREWBEANS                     
+
+SQL> /
+SQL> ALTER TABLE BB_Basket
+modify quantity number (4,0);
+
+Table BB_BASKET altered.
+
+SQL> /
+SQL> Select Object_name, Status
+from user_objects
+where object_name = 'ORDER_TOTAL_SP2';
+
+OBJECT_NAME                                                                                                                      STATUS
+-------------------------------------------------------------------------------------------------------------------------------- -------
+ORDER_TOTAL_SP2                                                                                                                  INVALID
+
+SQL> /
+SQL> Select name, type
+from user_dependencies
+where REFERENCED_NAME='BB_BASKETITEM';
+
+NAME                           TYPE             
+------------------------------ ------------------
+BASKET_ADD_SP                  PROCEDURE         
+BB_BASKETITEM_VU               VIEW              
+ORDER_TOTAL_SP2                PROCEDURE         
+SHIP_CALC3_SF                  FUNCTION          
+SUB_CALC_SF                    FUNCTION          
+
+SQL> /
+SQL> Spool off

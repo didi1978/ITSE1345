@@ -1,0 +1,22 @@
+SQL> ALTER TABLE bb_basketitem
+  ADD CONSTRAINT bbitems_qty_ck CHECK (quantity < 20);
+
+Table BB_BASKETITEM altered.
+
+SQL> DECLARE
+  e EXCEPTION;
+  PRAGMA EXCEPTION_INIT (e, -2290);
+BEGIN
+  INSERT INTO bb_basketitem 
+   VALUES (88,8,10.8,21,16,2,3);
+  EXCEPTION
+        WHEN e THEN
+          DBMS_OUTPUT.PUT_LINE(SQLERRM);
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+ORA-02290: check constraint (BREWBEANS.BBITEMS_QTY_CK) violated
+
+SQL> Spool OFF

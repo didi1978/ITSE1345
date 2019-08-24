@@ -1,0 +1,54 @@
+SQL> CREATE OR REPLACE PACKAGE disc_pkg
+IS
+  pv_disc_num NUMBER;
+  pv_disc_txt VARCHAR2(2);
+END;
+/
+
+Package DISC_PKG compiled
+
+SQL> BEGIN
+  disc_pkg.pv_disc_num :=5;
+  disc_pkg.pv_disc_txt :='N';
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+SQL> CREATE OR REPLACE TRIGGER bb_discount_trg 
+AFTER UPDATE OF orderplaced ON BB_Basket 
+FOR EACH ROW 
+BEGIN 
+  IF :NEW.orderplaced=1 AND disc_pkg.pv_disc_num =5 
+  THEN disc_pkg.pv_disc_txt :='Y';
+  ELSE
+    disc_pkg.pv_disc_txt :='N';
+  END IF;
+END;
+/
+
+Trigger BB_DISCOUNT_TRG compiled
+
+SQL> UPDATE bb_basket SET orderplaced = 1 WHERE IDBASKET =13;
+
+1 row updated.
+
+SQL> /
+SQL> SET SERVEROUTPUT ON
+SQL> BEGIN
+  DBMS_OUTPUT.PUT_LINE(disc_pkg.pv_disc_num);
+  DBMS_OUTPUT.PUT_LINE(disc_pkg.pv_disc_txt);
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+5
+Y
+
+SQL> ALTER TRIGGER bb_discount_trg DISABLE;
+
+Trigger BB_DISCOUNT_TRG altered.
+
+SQL> /
+SQL> Spool OFF

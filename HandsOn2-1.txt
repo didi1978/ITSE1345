@@ -1,0 +1,16 @@
+SQL> SET Serveroutput ON
+SQL> DECLARE
+  lv_test_date DATE               := '10-DEC-2012';
+  lv_test_num  CONSTANT NUMBER(3) :=10;
+  lv_test_txt  VARCHAR2(10);
+BEGIN
+  lv_test_txt := 'Huang';
+  DBMS_OUTPUT.PUT_LINE('My last name: '||lv_test_txt||', Date: '||lv_test_date||', Number: '||lv_test_num);
+End;
+/
+
+PL/SQL procedure successfully completed.
+
+My last name: Huang, Date: 10-DEC-12, Number: 10
+
+SQL> spool off

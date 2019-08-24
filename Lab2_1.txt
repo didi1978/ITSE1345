@@ -1,0 +1,46 @@
+SQL> Create table Theater
+ (ROW_nm INTEGER);
+
+Table THEATER created.
+
+SQL> Create SEQUENCE Theater_ROWnm_seq INCREMENT BY 1 MAXVALUE 5000 CYCLE;
+
+Sequence THEATER_ROWNM_SEQ created.
+
+SQL> INSERT INTO Theater VALUES (Theater_ROWnm_seq.NEXTVAL);
+
+1 row inserted.
+
+SQL> INSERT INTO Theater VALUES (Theater_ROWnm_seq.NEXTVAL);
+
+1 row inserted.
+
+SQL> SET SERVEROUTPUT ON
+SQL> DECLARE
+  list# Number :=0 ;
+  C_XYZ CONSTANT Number (10):=100;
+  V_Counter1 Binary_Integer;
+  V_Row THEATER.ROW_NM%type;
+  String_A  VARCHAR2(50);
+BEGIN
+  list# := list#+1;
+  DBMS_OUTPUT.put_line('list# '||list#);
+  DBMS_OUTPUT.put_line('C_XYZ '||C_XYZ);
+  V_Counter1 :=2**8;
+  DBMS_OUTPUT.put_line('V_Counter1 '||V_Counter1);
+  SELECT ROW_NM INTO V_Row From THEATER WHERE ROW_NM=2;
+  DBMS_OUTPUT.put_line('V_Row '||V_Row);
+  String_A:= 'This is ITSE1345 Lab 2';
+  DBMS_OUTPUT.put_line('String_A '||String_A);
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+list# 1
+C_XYZ 100
+V_Counter1 256
+V_Row 2
+String_A This is ITSE1345 Lab 2
+
+SQL> Spool Off

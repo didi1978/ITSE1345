@@ -1,0 +1,58 @@
+SQL> CREATE OR REPLACE FUNCTION day_ord_sf(
+    p_dtcreate IN DATE)
+  RETURN VARCHAR2
+IS
+BEGIN
+  RETURN TO_CHAR(p_dtcreate,'DAY');
+END day_ord_sf;
+/
+
+Function DAY_ORD_SF compiled
+
+SQL> Column DAY_ORD_SF(dtcreated) heading 'Day_Ordered' Format A20
+SQL> select idbasket, DAY_ORD_SF(dtcreated)
+from BB_BASKET
+order by idbasket;
+
+  IDBASKET Day_Ordered        
+---------- --------------------
+         3 MONDAY              
+         4 SUNDAY              
+         5 SUNDAY              
+         6 THURSDAY            
+         7 THURSDAY            
+         8 THURSDAY            
+         9 FRIDAY              
+        10 TUESDAY             
+        11 MONDAY              
+        12 SUNDAY              
+        13 THURSDAY            
+
+  IDBASKET Day_Ordered        
+---------- --------------------
+        14 FRIDAY              
+        15 TUESDAY             
+        16 FRIDAY              
+        17 TUESDAY             
+
+ 15 rows selected 
+
+SQL> /
+SQL> Column DAY_ORD_SF(dtcreated) heading Weekday Format A20
+SQL> Column COUNT(DAY_ORD_SF(dtcreated)) heading count_of_orders Format A20
+SQL> SELECT DAY_ORD_SF(dtcreated),
+  COUNT(DAY_ORD_SF(dtcreated))
+FROM BB_BASKET
+GROUP BY DAY_ORD_SF(dtcreated)
+ORDER BY COUNT(DAY_ORD_SF(dtcreated)) DESC;
+
+Weekday                   count_of_orders
+-------------------- --------------------
+THURSDAY                                4
+FRIDAY                                  3
+TUESDAY                                 3
+SUNDAY                                  3
+MONDAY                                  2
+
+SQL> /
+SQL> Spool off

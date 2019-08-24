@@ -1,0 +1,75 @@
+SQL> CREATE OR REPLACE TRIGGER bb_salesum_trg AFTER
+  UPDATE OF ORDERPLACED ON BB_BASKET FOR EACH ROW WHEN (old.orderplaced <>1
+  AND new.orderplaced =1) 
+DECLARE CURSOR sales_cur IS
+  SELECT IDPRODUCT,
+    PRICE,
+    QUANTITY,
+    OPTION1
+  FROM BB_BASKETITEM
+  WHERE IDBASKET = :new.idbasket;
+  ttl_sales NUMBER (6,2);
+  ttl_qty   NUMBER (5,0);
+BEGIN
+  FOR sales_rec IN sales_cur
+  LOOP
+      INSERT INTO bb_sales_sum
+        (idproduct
+        ) VALUES
+        (sales_rec.idproduct
+        );
+      SELECT SUM(total_sales)
+      INTO ttl_sales
+      FROM bb_sales_sum
+      WHERE IDPRODUCT=sales_rec.IDPRODUCT;
+      IF ttl_sales IS NULL THEN ttl_sales :=0;
+      END IF;
+      ttl_sales := (ttl_sales+(sales_rec.quantity*sales_rec.price));
+      UPDATE bb_sales_sum
+      SET total_sales = ttl_sales
+      WHERE idproduct = sales_rec.idproduct;
+      
+      SELECT SUM(total_qty)
+      INTO ttl_qty
+      FROM bb_sales_sum
+      WHERE IDPRODUCT      =sales_rec.IDPRODUCT;
+      IF ttl_qty IS NULL THEN ttl_qty :=0;
+      END IF;
+      IF sales_rec.option1 = 1 THEN
+        ttl_qty           := (ttl_qty + (sales_rec.quantity*0.5));
+      ELSE
+        ttl_qty := (ttl_qty + sales_rec.quantity);
+      END IF;
+      
+      UPDATE bb_sales_sum
+      SET total_qty   = ttl_qty
+      WHERE idproduct = sales_rec.idproduct;
+  END LOOP;
+END;
+/
+
+Trigger BB_SALESUM_TRG compiled
+
+SQL> UPDATE bb_basket SET ORderplaced =1 where IDBASKET=3;
+
+1 row updated.
+
+SQL> /
+SQL> Select * from bb_sales_sum;
+
+ IDPRODUCT TOTAL_SALES  TOTAL_QTY
+---------- ----------- ----------
+         6           5          1
+         8        21.6          2
+
+SQL> ROLLBACK;
+
+Rollback complete.
+
+SQL> /
+SQL> ALTER TRIGGER bb_salesum_trg DISABLE;
+
+Trigger BB_SALESUM_TRG altered.
+
+SQL> /
+SQL> Spool OFF

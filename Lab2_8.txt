@@ -1,0 +1,46 @@
+SQL> SET SERVEROUTPUT ON
+SQL> DECLARE
+TYPE tab_st
+IS
+  TABLE OF student%rowtype;
+  stu_tab tab_st;
+  lv_gender VARCHAR2(8);
+  lv_major student.major%type;
+BEGIN
+  SELECT * bulk collect INTO stu_tab FROM student;
+  FOR i IN 1..stu_tab.count
+  LOOP
+    IF stu_tab(i).gender='F' THEN
+      lv_gender        :='Female';
+    ELSE
+      lv_gender        :='Male';
+    END IF;
+    CASE
+    WHEN stu_tab(i).major = 'Math' THEN
+      lv_major           :='Math.';
+    WHEN stu_tab(i).major = 'English' THEN
+      lv_major           :='English.';
+    WHEN stu_tab(i).major = 'CompSci' THEN
+      lv_major           :='Comp Science.';
+    WHEN stu_tab(i).major = 'Geography' THEN
+      lv_major           :='Geography.';
+    END CASE;
+    dbms_output.put_line('Student '||stu_tab(i).F_name||' '||stu_tab(i).L_name||' is '||lv_gender||', Major in '||lv_major);
+  END LOOP;
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+Student Peter Smith is Male, Major in Math.
+Student Sam Jones is Male, Major in English.
+Student Amy Peters is Female, Major in English.
+Student John Johnson is Male, Major in Comp Science.
+Student Alton Penders is Female, Major in Math.
+Student Diane Allen is Female, Major in Geography.
+Student Jennifer  Gill is Female, Major in Comp Science.
+Student Roberta Johns is Female, Major in Comp Science.
+Student Paul Wier is Male, Major in Math.
+Student Richard Evans is Male, Major in English.
+
+SQL> Spool OFF

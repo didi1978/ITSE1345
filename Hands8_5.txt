@@ -1,0 +1,103 @@
+SQL> --Identify Dependencies.
+SQL> Select DISTINCT(NAME), TYPE from USER_DEPENDENCIES
+Where REFERENCED_OWNER in ('SYS', 'BREWBEANS')AND TYPE <>'TRIGGER'
+ORDER by NAME;
+
+NAME                           TYPE             
+------------------------------ ------------------
+BASKET_ADD_SP                  PROCEDURE         
+BASKET_CONFIRM_SP              PROCEDURE         
+BASK_CALC_SP                   PROCEDURE         
+BB_BASKETITEM_VU               VIEW              
+BB_SHIP_VU                     VIEW              
+CUSTOM_AUTH                    FUNCTION          
+CUSTOM_HASH                    FUNCTION          
+DATE_CT_SF                     FUNCTION          
+DAY_ORD_SF                     FUNCTION          
+DOLLAR_FMT_SF                  FUNCTION          
+EMP_SP                         PROCEDURE         
+
+NAME                           TYPE             
+------------------------------ ------------------
+FCT_TEST1_SF                   FUNCTION          
+FCT_TEST2_SF                   FUNCTION          
+LOCAL_NAMED                    PROCEDURE         
+LOGIN2_SP                      PROCEDURE         
+LOGIN_PKG                      PACKAGE           
+LOGIN_PKG                      PACKAGE BODY      
+LOGIN_SP                       PROCEDURE         
+LOOKUP_PKG                     PACKAGE           
+LOOKUP_PKG                     PACKAGE BODY      
+MEMBER_CK_SP                   PROCEDURE         
+MEMFMT1_SF                     FUNCTION          
+
+NAME                           TYPE             
+------------------------------ ------------------
+ORDER_INFO_PKG                 PACKAGE           
+ORDER_INFO_PKG                 PACKAGE BODY      
+ORDER_TOTAL_SP                 PROCEDURE         
+ORDER_TOTAL_SP2                PROCEDURE         
+PHONE_FMT_SP                   PROCEDURE         
+PROD_ADD_SP                    PROCEDURE         
+PROD_NAME_SP                   PROCEDURE         
+PROMO_SHIP_SP                  PROCEDURE         
+PROMO_TEST_SP                  PROCEDURE         
+RUN_NOCOPY_SP                  PROCEDURE         
+SHIP_CALC3_SF                  FUNCTION          
+
+NAME                           TYPE             
+------------------------------ ------------------
+SHIP_COST_SP                   PROCEDURE         
+SHOP_QUERY_PKG                 PACKAGE           
+SHOP_QUERY_PKG                 PACKAGE BODY      
+STATUS_CHECK_SP                PROCEDURE         
+STATUS_DESC_SF                 FUNCTION          
+STATUS_SHIP_SP                 PROCEDURE         
+STATUS_SP                      PROCEDURE         
+STOCK_CK_SP                    PROCEDURE         
+SUB_CALC_SF                    FUNCTION          
+TAX_CALC2_SF                   FUNCTION          
+TAX_CALC_SF                    FUNCTION          
+
+NAME                           TYPE             
+------------------------------ ------------------
+TAX_COST_SP                    PROCEDURE         
+TAX_RATE_PKG                   PACKAGE           
+TAX_RATE_PKG                   PACKAGE BODY      
+TC_TEST_SP1                    PROCEDURE         
+TC_TEST_SP2                    PROCEDURE         
+TEST_NOCOPY_SP                 PROCEDURE         
+TEST_OUT_SF                    FUNCTION          
+
+ 51 rows selected 
+
+SQL> /
+SQL> --List of Direct Dependencies on BB_BASKET
+SQL> Select Name, type
+from user_dependencies
+Where REFERENCED_NAME = 'BB_BASKET';
+
+NAME                           TYPE             
+------------------------------ ------------------
+BASKET_CONFIRM_SP              PROCEDURE         
+BASK_CALC_SP                   PROCEDURE         
+BB_SHIP_VU                     VIEW              
+ORDER_INFO_PKG                 PACKAGE BODY      
+PROMO_SHIP_SP                  PROCEDURE         
+PROMO_TEST_SP                  PROCEDURE         
+STATUS_SP                      PROCEDURE         
+TAX_CALC2_SF                   FUNCTION          
+
+ 8 rows selected 
+
+SQL> /
+SQL> --List of Indirect Dependencies on BB_BASKET
+SQL> Select Name, type
+from user_dependencies
+Where REFERENCED_NAME = 'BB_BASKET_VU';
+
+no rows selected
+
+
+SQL> /
+SQL> Spool OFF

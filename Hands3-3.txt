@@ -1,0 +1,28 @@
+SQL> SET SERVEROUTPUT ON
+SQL> DECLARE
+  lv_total_num  NUMBER(7,2);
+  lv_rating_txt VARCHAR2(4);
+  lv_shop_num bb_basket.idshopper%type :=22;
+BEGIN
+  SELECT SUM(total)
+  INTO lv_total_num
+  FROM bb_basket
+  WHERE idshopper =lv_shop_num
+  AND orderplaced =1
+  GROUP BY idshopper;
+  IF lv_total_num    > 200 THEN
+    lv_rating_txt  :='HIGH';
+  elsif lv_total_num>=100 AND lv_total_num<=200 THEN
+    lv_rating_txt   :='MID';
+  elsif lv_total_num <100 THEN
+    lv_rating_txt   :='LOW';
+  END IF;
+  DBMS_OUTPUT.PUT_LINE('Shopper '||lv_shop_num||' is rated '||lv_rating_txt);
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+Shopper 22 is rated HIGH
+
+SQL> spool OFF

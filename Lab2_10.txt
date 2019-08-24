@@ -1,0 +1,61 @@
+SQL> CREATE TABLE tmp_student 
+(   STU_ID     NUMBER(5),
+    L_NAME     VARCHAR2 (20),
+    F_NAME     VARCHAR2 (20),
+    M_NAME     VARCHAR2 (10),
+    GENDER     CHAR(2),
+    MAJOR      VARCHAR2 (20),
+    HOME_STATE CHAR(4)
+  );
+
+Table TMP_STUDENT created.
+
+SQL> DESCRIBE tmp_student;
+
+Name       Null Type         
+---------- ---- ------------ 
+STU_ID          NUMBER(5)    
+L_NAME          VARCHAR2(20) 
+F_NAME          VARCHAR2(20) 
+M_NAME          VARCHAR2(10) 
+GENDER          CHAR(2)      
+MAJOR           VARCHAR2(20) 
+HOME_STATE      CHAR(4)      
+SQL> /
+SQL> SET SERVEROUTPUT ON
+SQL> DECLARE
+Type tab_st IS TABLE OF student%rowtype;
+  stutab tab_st;
+  i NUMBER :=1;
+BEGIN
+  SELECT * bulk collect INTO stutab FROM student;
+  WHILE i<11
+  LOOP
+    INSERT INTO tmp_student
+      (stu_id, l_name,F_NAME,GENDER,MAJOR,HOME_STATE) VALUES
+      (stutab(i).stu_id,stutab(i).l_name,stutab(i).f_name,stutab(i).gender,stutab(i).major,stutab(i).home_state);
+    i:=i+1;
+  END LOOP;
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+SQL> Select * from tmp_student;
+
+    STU_ID L_NAME               F_NAME               M_NAME     GE MAJOR                HOME
+---------- -------------------- -------------------- ---------- -- -------------------- ----
+     10001 Smith                Peter                           M  Math                 TX  
+     10002 Jones                Sam                             M  English              TX  
+     10003 Peters               Amy                             F  English              ME  
+     10004 Johnson              John                            M  CompSci              CA  
+     10005 Penders              Alton                           F  Math                 GA  
+     10006 Allen                Diane                           F  Geography            MINN
+     10007 Gill                 Jennifer                        F  CompSci              TX  
+     10008 Johns                Roberta                         F  CompSci              TX  
+     10009 Wier                 Paul                            M  Math                 AL  
+     10010 Evans                Richard                         M  English              TX  
+
+ 10 rows selected 
+
+SQL> Spool OFF

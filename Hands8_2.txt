@@ -1,0 +1,82 @@
+SQL> CREATE OR REPLACE FUNCTION status_desc_sf
+  (p_stage IN NUMBER)
+  RETURN VARCHAR2
+ IS
+  lv_stage_txt VARCHAR2(30);
+BEGIN
+ IF p_stage = 1 THEN
+   lv_stage_txt := 'Order Submitted';
+ ELSIF p_stage = 2 THEN
+   lv_stage_txt := 'Accepted, sent to shipping';
+ ELSIF p_stage = 3 THEN
+   lv_stage_txt := 'Backordered';
+ ELSIF p_stage = 4 THEN
+   lv_stage_txt := 'Cancelled';
+ ELSIF p_stage = 5 THEN
+   lv_stage_txt := 'Shipped';
+ END IF;
+ RETURN lv_stage_txt;
+END;
+/
+
+Function STATUS_DESC_SF compiled
+
+SQL> CREATE OR REPLACE PROCEDURE status_check_sp
+  (p_bask IN NUMBER,
+   p_stage OUT NUMBER,
+   p_desc OUT VARCHAR2)
+ IS
+BEGIN
+  SELECT idstage
+   INTO p_stage
+   FROM bb_basketstatus
+   WHERE idBasket = p_bask;
+  p_desc := status_desc_sf(p_stage);
+END;
+/
+
+Procedure STATUS_CHECK_SP compiled
+
+SQL> Select object_name, status
+from user_objects
+where object_name in ('STATUS_CHECK_SP','STATUS_DESC_SF');
+
+OBJECT_NAME                                                                                                                      STATUS
+-------------------------------------------------------------------------------------------------------------------------------- -------
+STATUS_CHECK_SP                                                                                                                  VALID  
+STATUS_DESC_SF                                                                                                                   VALID  
+
+SQL> /
+SQL> SELECT object_name,
+  status
+FROM user_objects
+WHERE object_name IN ('STATUS_CHECK_SP','STATUS_DESC_SF');
+
+OBJECT_NAME                                                                                                                      STATUS
+-------------------------------------------------------------------------------------------------------------------------------- -------
+STATUS_CHECK_SP                                                                                                                  INVALID
+STATUS_DESC_SF                                                                                                                   VALID  
+
+SQL> /
+SQL> DECLARE
+  lv_stage_num NUMBER (2);
+  lv_desc_txt  VARCHAR2(30);
+BEGIN
+  STATUS_CHECK_SP(13,lv_stage_num, lv_desc_txt);
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+SQL> SELECT object_name,
+  status
+FROM user_objects
+WHERE object_name IN ('STATUS_CHECK_SP','STATUS_DESC_SF');
+
+OBJECT_NAME                                                                                                                      STATUS
+-------------------------------------------------------------------------------------------------------------------------------- -------
+STATUS_CHECK_SP                                                                                                                  VALID  
+STATUS_DESC_SF                                                                                                                   VALID  
+
+SQL> /
+SQL> Spool off

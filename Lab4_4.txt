@@ -1,0 +1,52 @@
+SQL> SET SERVEROUTPUT ON
+SQL> /*All four tables were created in the Lab3 exercise. Here I only
+I only show the commands used to change these tables.*/
+SQL> CREATE OR REPLACE PROCEDURE dml_pat_sp(
+    p_col VARCHAR2,
+    p_num NUMBER,
+    p_id PATIENT.PAT_NBR%TYPE)
+IS
+BEGIN
+  EXECUTE IMMEDIATE 'UPDATE patient  
+SET '||p_col||' = :ph_num  
+WHERE pat_nbr = :ph_id' USING p_num, p_id;
+END dml_pat_sp;
+/
+
+Procedure DML_PAT_SP compiled
+
+SQL> SELECT PAT_NBR,
+  PAT_ROOM,
+  PAT_BED
+FROM patient
+WHERE PAT_NBR= 1379
+OR PAT_NBR  = 4500;
+
+   PAT_NBR   PAT_ROOM    PAT_BED
+---------- ---------- ----------
+      1379        101          1
+      4500        228          2
+
+SQL> /
+SQL> BEGIN
+  dml_pat_sp('PAT_ROOM', 999, 1379);
+  dml_pat_sp('PAT_BED', 5, 4500);
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+SQL> SELECT PAT_NBR,
+  PAT_ROOM,
+  PAT_BED
+FROM patient
+WHERE PAT_NBR= 1379
+OR PAT_NBR  = 4500;
+
+   PAT_NBR   PAT_ROOM    PAT_BED
+---------- ---------- ----------
+      1379        999          1
+      4500        228          5
+
+SQL> /
+SQL> Spool OFF

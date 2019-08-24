@@ -1,0 +1,58 @@
+SQL> CREATE OR REPLACE TRIGGER bb_reqfill_trg 
+AFTER UPDATE OF DTrecd ON BB_product_request 
+FOR EACH ROW 
+BEGIN 
+IF :OLD.DTRECD IS NULL AND :NEW.DTRECD IS NOT NULL THEN
+  UPDATE BB_PRODUCT
+  SET STOCK            = :NEW.QTY + STOCK
+  WHERE idproduct      = :new.idproduct;
+ELSIF :OLD.DTRECD IS NOT NULL AND :NEW.DTRECD IS NULL THEN
+  UPDATE BB_PRODUCT 
+  SET STOCK = STOCK - :NEW.qty 
+  WHERE idproduct = :new.idproduct;
+END IF;
+END;
+/
+
+Trigger BB_REQFILL_TRG compiled
+
+SQL> INSERT INTO BB_PRODUCT_REQUEST (idrequest, idproduct, dtrequest, qty, dtrecd, cost) 
+VALUES (4,5,sysdate,45,'15-JUN-2012',225);
+
+1 row inserted.
+
+SQL> /
+SQL> Update BB_PRODUCT Set stock = 86 where idproduct=5;
+
+1 row updated.
+
+SQL> Commit;
+
+Commit complete.
+
+SQL> /
+SQL> Select idproduct, STOCK from BB_PRODUCT where IDPRODUCT=5;
+
+ IDPRODUCT      STOCK
+---------- ----------
+         5         86
+
+SQL> /
+SQL> Update bb_product_request set DTRECD = NULL Where IDREQUEST =4;
+
+1 row updated.
+
+SQL> /
+SQL> Select idproduct, STOCK from BB_PRODUCT where IDPRODUCT=5;
+
+ IDPRODUCT      STOCK
+---------- ----------
+         5         41
+
+SQL> /
+SQL> ALTER TRIGGER bb_reqfill_trg DISABLE;
+
+Trigger BB_REQFILL_TRG altered.
+
+SQL> /
+SQL> Spool OFF

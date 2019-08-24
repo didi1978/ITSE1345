@@ -1,0 +1,19 @@
+SQL> DECLARE
+ rec_shopper bb_shopper%ROWTYPE;
+ lv_shopper_num BB_SHOPPER.IDSHOPPER%TYpe :=99;
+BEGIN
+ SELECT *
+  INTO rec_shopper
+  FROM bb_shopper
+  WHERE idShopper = lv_shopper_num;
+EXCEPTION
+      WHEN no_data_found THEN
+        DBMS_OUTPUT.PUT_LINE('Invalid Shopper ID.');
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+Invalid Shopper ID.
+
+SQL> Spool OFF

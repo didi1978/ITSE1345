@@ -1,0 +1,114 @@
+SQL> DECLARE
+  lv_status   VARCHAR2 (10);
+  lv_qty      NUMBER(8,2) ;
+  lv_shipping NUMBER (8,2);
+BEGIN
+  lv_status:= '&Enter_Y_or_N';
+  lv_qty:= &total_qty;
+  IF lv_status='Y' THEN
+    IF lv_qty>0 AND lv_qty<=3 THEN 
+    lv_shipping  :=3;
+    DBMS_OUTPUT.put_line('Status: Club Member, Shipping Cost: '||lv_shipping||', Total Qty: '||lv_qty);
+    ELSIF lv_qty>=4 AND lv_qty<=6 THEN 
+    lv_shipping  :=5;
+    DBMS_OUTPUT.put_line('Status: Club Member, Shipping Cost: '||lv_shipping||', Total Qty: '||lv_qty);
+    ELSIF lv_qty>=7 AND lv_qty<=10 THEN 
+    lv_shipping  :=7;
+    DBMS_OUTPUT.put_line('Status: Club Member, Shipping Cost: '||lv_shipping||', Total Qty: '||lv_qty);
+    ELSIF lv_qty>=10 THEN 
+    lv_shipping  :=9;
+    DBMS_OUTPUT.put_line('Status: Club Member, Shipping Cost: '||lv_shipping||', Total Qty: '||lv_qty);
+    END IF;
+  ELSIF lv_status='N' THEN
+    IF lv_qty>0 AND lv_qty<=3 THEN
+    lv_shipping  :=5;
+    DBMS_OUTPUT.put_line('Status: Non Member, Shipping Cost: '||lv_shipping||', Total Qty: '||lv_qty);
+    ELSIF lv_qty>=4 AND lv_qty<=6 THEN 
+    lv_shipping  :=7.5;
+    DBMS_OUTPUT.put_line('Status: Non Member, Shipping Cost: '||lv_shipping||', Total Qty: '||lv_qty);
+    ELSIF lv_qty>=7 AND lv_qty<=10 THEN 
+    lv_shipping  :=10;
+    DBMS_OUTPUT.put_line('Status: Non Member, Shipping Cost: '||lv_shipping||', Total Qty: '||lv_qty);
+    ELSIF lv_qty>=10 THEN 
+    lv_shipping  :=12;
+    DBMS_OUTPUT.put_line('Status: Non Member, Shipping Cost: '||lv_shipping||', Total Qty: '||lv_qty);
+    END IF;
+  END IF;
+END;
+/
+old:DECLARE
+  lv_status   VARCHAR2 (10) := '&Enter_Y_or_N';
+  lv_qty      NUMBER(8,2)   := &total_qty;
+  lv_shipping NUMBER (8,2);
+BEGIN
+  IF lv_status='Y' THEN
+    IF lv_qty>0 AND lv_qty<=3 THEN 
+    lv_shipping  :=3;
+    DBMS_OUTPUT.put_line('Status: Club Member, Shipping Cost: '||lv_shipping||', Total Qty: '||lv_qty);
+    ELSIF lv_qty>=4 AND lv_qty<=6 THEN 
+    lv_shipping  :=5;
+    DBMS_OUTPUT.put_line('Status: Club Member, Shipping Cost: '||lv_shipping||', Total Qty: '||lv_qty);
+    ELSIF lv_qty>=7 AND lv_qty<=10 THEN 
+    lv_shipping  :=7;
+    DBMS_OUTPUT.put_line('Status: Club Member, Shipping Cost: '||lv_shipping||', Total Qty: '||lv_qty);
+    ELSIF lv_qty>=10 THEN 
+    lv_shipping  :=9;
+    DBMS_OUTPUT.put_line('Status: Club Member, Shipping Cost: '||lv_shipping||', Total Qty: '||lv_qty);
+    END IF;
+  ELSIF lv_status='N' THEN
+    IF lv_qty>0 AND lv_qty<=3 THEN
+    lv_shipping  :=5;
+    DBMS_OUTPUT.put_line('Status: Non Member, Shipping Cost: '||lv_shipping||', Total Qty: '||lv_qty);
+    ELSIF lv_qty>=4 AND lv_qty<=6 THEN 
+    lv_shipping  :=7.5;
+    DBMS_OUTPUT.put_line('Status: Non Member, Shipping Cost: '||lv_shipping||', Total Qty: '||lv_qty);
+    ELSIF lv_qty>=7 AND lv_qty<=10 THEN 
+    lv_shipping  :=10;
+    DBMS_OUTPUT.put_line('Status: Non Member, Shipping Cost: '||lv_shipping||', Total Qty: '||lv_qty);
+    ELSIF lv_qty>=10 THEN 
+    lv_shipping  :=12;
+    DBMS_OUTPUT.put_line('Status: Non Member, Shipping Cost: '||lv_shipping||', Total Qty: '||lv_qty);
+    END IF;
+  END IF;
+END;
+new:DECLARE
+  lv_status   VARCHAR2 (10) := 'Y';
+  lv_qty      NUMBER(8,2)   := 13;
+  lv_shipping NUMBER (8,2);
+BEGIN
+  IF lv_status='Y' THEN
+    IF lv_qty>0 AND lv_qty<=3 THEN 
+    lv_shipping  :=3;
+    DBMS_OUTPUT.put_line('Status: Club Member, Shipping Cost: '||lv_shipping||', Total Qty: '||lv_qty);
+    ELSIF lv_qty>=4 AND lv_qty<=6 THEN 
+    lv_shipping  :=5;
+    DBMS_OUTPUT.put_line('Status: Club Member, Shipping Cost: '||lv_shipping||', Total Qty: '||lv_qty);
+    ELSIF lv_qty>=7 AND lv_qty<=10 THEN 
+    lv_shipping  :=7;
+    DBMS_OUTPUT.put_line('Status: Club Member, Shipping Cost: '||lv_shipping||', Total Qty: '||lv_qty);
+    ELSIF lv_qty>=10 THEN 
+    lv_shipping  :=9;
+    DBMS_OUTPUT.put_line('Status: Club Member, Shipping Cost: '||lv_shipping||', Total Qty: '||lv_qty);
+    END IF;
+  ELSIF lv_status='N' THEN
+    IF lv_qty>0 AND lv_qty<=3 THEN
+    lv_shipping  :=5;
+    DBMS_OUTPUT.put_line('Status: Non Member, Shipping Cost: '||lv_shipping||', Total Qty: '||lv_qty);
+    ELSIF lv_qty>=4 AND lv_qty<=6 THEN 
+    lv_shipping  :=7.5;
+    DBMS_OUTPUT.put_line('Status: Non Member, Shipping Cost: '||lv_shipping||', Total Qty: '||lv_qty);
+    ELSIF lv_qty>=7 AND lv_qty<=10 THEN 
+    lv_shipping  :=10;
+    DBMS_OUTPUT.put_line('Status: Non Member, Shipping Cost: '||lv_shipping||', Total Qty: '||lv_qty);
+    ELSIF lv_qty>=10 THEN 
+    lv_shipping  :=12;
+    DBMS_OUTPUT.put_line('Status: Non Member, Shipping Cost: '||lv_shipping||', Total Qty: '||lv_qty);
+    END IF;
+  END IF;
+END;
+
+PL/SQL procedure successfully completed.
+
+Status: Club Member, Shipping Cost: 9, Total Qty: 13
+
+SQL> Spool off

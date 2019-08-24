@@ -1,0 +1,30 @@
+SQL> SET SERVEROUTPUT ON
+SQL> DECLARE
+  lv_stuid STU_CRSE.STU_ID%type;
+  count_stu NUMBER;
+  CURSOR cc
+  IS
+    SELECT stu_id, COUNT(CRSE_ID) FROM STU_CRSE GROUP BY STU_ID;
+BEGIN
+  OPEN cc;
+  LOOP
+    FETCH cc INTO lv_stuid, count_stu;
+    EXIT
+  WHEN cc%notfound;
+    DBMS_OUTPUT.PUT_LINE('Student id: '||lv_stuid||' Number of Courses: '||count_stu);
+  END LOOP;
+  CLOSE cc;
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+Student id: 10001 Number of Courses: 1
+Student id: 10002 Number of Courses: 1
+Student id: 10003 Number of Courses: 3
+Student id: 10004 Number of Courses: 1
+Student id: 10005 Number of Courses: 1
+Student id: 10006 Number of Courses: 2
+Student id: 10007 Number of Courses: 2
+
+SQL> Spool off

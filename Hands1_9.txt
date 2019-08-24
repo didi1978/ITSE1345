@@ -1,0 +1,22 @@
+SQL> Insert INTO Contacts
+    values(1,'JBF', 'sales@jbf.com','01-Dec-2012',10);
+
+1 row inserted.
+
+SQL> Insert INTO Contacts
+    values(2,'Tea Tree', 'contacts@teatree.com', DEFAULT ,5);
+
+1 row inserted.
+
+SQL> Commit;
+
+Commit complete.
+
+SQL> select * from contacts;
+
+    CON_ID COMPANY_NAME                   E_MAIL                         LAST_DATE    CON_CNT
+---------- ------------------------------ ------------------------------ --------- ----------
+         1 JBF                            sales@jbf.com                  01-DEC-12         10
+         2 Tea Tree                       contacts@teatree.com           31-MAY-19          5
+
+SQL> Spool off;

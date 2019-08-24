@@ -1,0 +1,52 @@
+SQL> CREATE OR REPLACE FUNCTION tax_calc_sf(
+    p_id IN NUMBER)
+  RETURN bb_basket.subtotal%type
+IS
+  lv_state_txt bb_basket.shipstate%type;
+  lv_subtot_num bb_basket.subtotal%type;
+  lv_tax_num NUMBER :=0;
+BEGIN
+ SELECT subtotal, shipstate into lv_subtot_num, lv_state_txt
+ from bb_basket
+ where idbasket = p_id;
+ IF lv_state_txt = 'VA' THEN lv_tax_num := lv_subtot_num*.045;
+ ELSIF lv_state_txt = 'NC' THEN lv_tax_num := lv_subtot_num*.03;
+ ELSIF lv_state_txt = 'SC' THEN lv_tax_num := lv_subtot_num*.06;
+ END IF;
+RETURN lv_tax_num;
+EXCEPTION
+WHEN NO_DATA_FOUND THEN
+RETURN 0;
+END tax_calc_sf;
+/
+
+Function TAX_CALC_SF compiled
+
+SQL> Column tax_calc_sf(idbasket) Heading 'Calculated Tax' Format A20
+SQL> Select idbasket, tax_calc_sf(idbasket) From bb_basket;
+
+  IDBASKET       Calculated Tax
+---------- --------------------
+         3                    0
+         4                  .86
+         5                    0
+         6                 6.75
+         7                    0
+         8                    0
+         9                    0
+        10                    0
+        11                    0
+        12                    0
+        13                    0
+
+  IDBASKET       Calculated Tax
+---------- --------------------
+        14                    0
+        15                    0
+        16                    0
+        17                    0
+
+ 15 rows selected 
+
+SQL> /
+SQL> Spool off

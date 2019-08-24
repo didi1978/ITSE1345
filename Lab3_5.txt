@@ -1,0 +1,75 @@
+SQL> CREATE OR REPLACE FUNCTION str_adj(
+    lv_string IN VARCHAR2,
+    sp_len    IN NUMBER)
+  RETURN VARCHAR2
+IS
+  lv_txt VARCHAR2(100);
+  ac_len NUMBER(2);
+BEGIN
+  SELECT LENGTH(ltrim(lv_string)) INTO ac_len FROM dual;
+  IF ac_len  < sp_len THEN
+    lv_txt  :=rpad(ltrim(lv_string),sp_len,' ');
+  ELSIF ac_len > sp_len THEN
+    lv_txt    :=substr(ltrim(lv_string),-ac_len,sp_len);
+  END IF;
+  RETURN lv_txt;
+END str_adj;
+/
+
+Function STR_ADJ compiled
+
+SQL> SET SERVEROUTPUT ON
+SQL> --actual length greater than sp_len.
+SQL> DECLARE
+lv_str VARCHAR2(50):='What is the time.';
+sp_len NUMBER (2):=6;
+rt_txt VARCHAR2(30);
+BEGIN
+rt_txt:=str_adj(lv_str,sp_len);
+SYS.DBMS_OUTPUT.PUT_LINE(rt_txt);
+SYS.DBMS_OUTPUT.PUT_LINE('String length:'||length(rt_txt));
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+What i
+String length:6
+
+SQL> SET SERVEROUTPUT ON
+SQL> --sp length greater than ac_len.
+SQL> DECLARE
+lv_str VARCHAR2(50):='What is the time.';
+sp_len NUMBER (2):=25;
+rt_txt VARCHAR2(100);
+BEGIN
+rt_txt:=str_adj(lv_str,sp_len);
+SYS.DBMS_OUTPUT.PUT_LINE(rt_txt);
+SYS.DBMS_OUTPUT.PUT_LINE('String length:'||length(rt_txt));
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+What is the time.        
+String length:25
+
+SQL> SET SERVEROUTPUT ON
+SQL> --scenario 3 ac length greater than sp_len with leading space.
+SQL> DECLARE
+lv_str VARCHAR2(50):='    What is the time.         ';
+sp_len NUMBER (2):=15;
+rt_txt VARCHAR2(100);
+BEGIN
+rt_txt:=str_adj(lv_str,sp_len);
+SYS.DBMS_OUTPUT.PUT_LINE(rt_txt);
+SYS.DBMS_OUTPUT.PUT_LINE('String length:'||length(rt_txt));
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+What is the tim
+String length:15
+
+SQL> Spool OFF

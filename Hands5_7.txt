@@ -1,0 +1,38 @@
+SQL> CREATE OR REPLACE PROCEDURE promo_ship_sp(
+    p_dateoff IN bb_basket.dtcreated%type,
+    p_month   IN bb_promolist.month%type,
+    p_year    IN bb_promolist.year%type )
+  IS
+  CURSOR cur_promo IS
+    SELECT idshopper, Max(dtcreated) as dtvisit
+    FROM bb_basket 
+    HAVING max(dtcreated)<p_dateoff
+    Group by idshopper;
+  promo_flag NUMBER;
+BEGIN
+  FOR rec_promo IN cur_promo LOOP
+      INSERT INTO bb_promolist
+              (Idshopper,MONTH,YEAR,promo_flag)
+              VALUES (rec_promo.idshopper,p_month,p_year,1);
+  END LOOP;
+END promo_ship_sp;
+/
+
+Procedure PROMO_SHIP_SP compiled
+
+SQL> BEGIN
+  promo_ship_sp('15-FEB-12','APR',2012);
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+SQL> Select * from bb_promolist;
+
+ IDSHOPPER MON YEAR PR U
+---------- --- ---- -- -
+        26 APR 2012 1  N
+        21 APR 2012 1  N
+
+SQL> /
+SQL> Spool off

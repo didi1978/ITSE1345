@@ -1,0 +1,41 @@
+SQL> SET SERVEROUTPUT ON
+SQL> CREATE OR REPLACE TRIGGER trtdt_trg BEFORE
+  INSERT OR
+  UPDATE OF trt_date ON treatment FOR EACH ROW 
+  WHEN (new.trt_date>sysdate
+  OR new.trt_date<(sysdate-90)) 
+
+BEGIN 
+  RAISE_APPLICATION_ERROR(-20100,'Invalid treatment date.');
+END;
+/
+
+Trigger TRTDT_TRG compiled
+
+SQL> Insert INTO treatment VALUES (
+treatid_seq.nextval, 3249, 103, '13-08','20-JUL-2019');
+
+1 row inserted.
+
+SQL> UPDATE treatment SET trt_date='30-MAR-2018' Where PAT_NBR=1379;
+
+Error starting at line : 16 in command -
+UPDATE treatment SET trt_date='30-MAR-2018' Where PAT_NBR=1379
+Error report -
+SQL Error: ORA-20100: Invalid treatment date.
+ORA-06512: at "STUDENT.TRTDT_TRG", line 2
+ORA-04088: error during execution of trigger 'STUDENT.TRTDT_TRG'
+
+SQL> /
+SQL> Select * from treatment where PAT_NBR=3249 OR PAT_NBR=1379 ORDER BY PAT_NBR;
+
+    TRT_ID    PAT_NBR    PHYS_ID TRT_P TRT_DATE
+---------- ---------- ---------- ----- ---------
+         2       1379        103 27-45 25-MAR-99
+        23       3249        103 13-08 20-JUL-19
+         9       3249        103 88-20 24-JAN-00
+         1       3249        101 13-08 12-FEB-99
+         3       3249        103 88-20 22-JAN-99
+
+SQL> /
+SQL> Spool OFF

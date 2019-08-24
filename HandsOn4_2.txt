@@ -1,0 +1,62 @@
+SQL> SET SERVEROUTPUT ON
+SQL> DECLARE
+  CURSOR cur_shopper
+  IS
+    SELECT a.idshopper,
+      a.promo,
+      b.total
+    FROM bb_shopper a,
+      (SELECT c.idshopper,
+        SUM(bi.quantity*bi.price) total
+      FROM BB_BASKETITEM bi,
+        bb_basket c
+      WHERE bi.IDBASKET=c.IDBASKET
+      GROUP BY idshopper
+      ) b
+  WHERE a.idshopper=b.idshopper FOR UPDATE OF a.idshopper nowait;
+  lv_promo_txt CHAR(1);
+BEGIN
+  FOR rec_shopper IN cur_shopper
+  LOOP
+    lv_promo_txt       :='X';
+    IF rec_shopper.total>100 THEN
+      lv_promo_txt     :='A';
+      END IF;
+    IF rec_shopper.total BETWEEN 50 AND 90 THEN
+      lv_promo_txt     :='B';
+      END IF;
+    IF lv_promo_txt <> 'X' THEN
+      UPDATE bb_shopper SET promo=lv_promo_txt WHERE CURRENT OF cur_shopper;
+    END IF;
+  END LOOP;
+  COMMIT;
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+SQL> Column Promo Format A5
+SQL> SELECT idshopper,
+  s.promo,
+  SUM(bi.quantity*bi.price) total
+FROM bb_shopper s
+INNER JOIN bb_basket b USING (IDSHOPPER)
+INNER JOIN bb_basketitem bi USING (idbasket)
+GROUP BY IDSHOPPER,
+  s.PROMO
+ORDER BY IDSHOPPER;
+
+ IDSHOPPER PROMO      TOTAL
+---------- ----- ----------
+        21 B           55.1
+        22 A         191.59
+        23 B           64.8
+        24             48.9
+        25 B           72.4
+        26               20
+        27             32.4
+
+ 7 rows selected 
+
+SQL> /
+SQL> Spool OFF

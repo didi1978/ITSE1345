@@ -1,0 +1,121 @@
+SQL> SET SERVEROUTPUT ON
+SQL> DECLARE
+  lv_physid PHYSICIAN.PHYS_ID%type     :=110;
+  lv_name PHYSICIAN.PHYS_name%type     :='J.J';
+  lv_phone PHYSICIAN.PHYS_phone%type   :='901-888-4453';
+  lv_spec PHYSICIAN.PHYS_specialty%type:='ENT All.';
+  rec_phys physician%rowtype;
+  lv_valid BOOLEAN := FALSE;
+BEGIN
+  SELECT * INTO rec_phys FROM physician WHERE phys_id=lv_physid;
+  IF SQL%FOUND THEN
+    lv_valid :=TRUE;
+  END IF;
+  IF lv_valid = TRUE THEN
+    UPDATE PHYSICIAN
+    SET PHYS_NAME   =lv_name,
+      phys_phone    =lv_phone,
+      phys_specialty=lv_spec
+    WHERE phys_id   =lv_physid;
+  END IF;
+  DBMS_OUTPUT.PUT_LINE ('Physician: '||lv_physid||' information is updated.');
+EXCEPTION
+WHEN NO_DATA_FOUND THEN
+  INSERT
+  INTO PHYSICIAN
+    (
+      phys_id,
+      PHYS_NAME,
+      phys_phone,
+      phys_specialty
+    )
+    VALUES
+    (
+      lv_physid,
+      lv_name,
+      lv_phone,
+      lv_spec
+    );
+  DBMS_OUTPUT.PUT_LINE ('Physician: '||lv_physid||' information is inserted.');
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+Physician: 110 information is inserted.
+
+SQL> SELECT * FROM physician;
+
+   PHYS_ID PHYS_NAME       PHYS_PHONE      PHYS_SPECIALTY          
+---------- --------------- --------------- -------------------------
+       101 Wilcox, Chris   512-329-1848    Eyes, Ears, Throat       
+       102 Nusca, Jane     512-516-3947    Cardiovascular           
+       103 Gomez, Juan     512-382-4987    Orthopedics              
+       104 Li, Jan         512-516-3948    Cardiovascular           
+       105 Simmons, Alex   512-442-5700    Hemotology               
+       110 J.J             901-888-4453    ENT All.                 
+
+ 6 rows selected 
+
+SQL> SET SERVEROUTPUT ON
+SQL> DECLARE
+  lv_physid PHYSICIAN.PHYS_ID%type     :=101;
+  lv_name PHYSICIAN.PHYS_name%type     :='J.J';
+  lv_phone PHYSICIAN.PHYS_phone%type   :='901-888-4453';
+  lv_spec PHYSICIAN.PHYS_specialty%type:='ENT All.';
+  rec_phys physician%rowtype;
+  lv_valid BOOLEAN := FALSE;
+BEGIN
+  SELECT * INTO rec_phys FROM physician WHERE phys_id=lv_physid;
+  IF SQL%FOUND THEN
+    lv_valid :=TRUE;
+  END IF;
+  IF lv_valid = TRUE THEN
+    UPDATE PHYSICIAN
+    SET PHYS_NAME   =lv_name,
+      phys_phone    =lv_phone,
+      phys_specialty=lv_spec
+    WHERE phys_id   =lv_physid;
+  END IF;
+  DBMS_OUTPUT.PUT_LINE ('Physician: '||lv_physid||' information is updated.');
+EXCEPTION
+WHEN NO_DATA_FOUND THEN
+  INSERT
+  INTO PHYSICIAN
+    (
+      phys_id,
+      PHYS_NAME,
+      phys_phone,
+      phys_specialty
+    )
+    VALUES
+    (
+      lv_physid,
+      lv_name,
+      lv_phone,
+      lv_spec
+    );
+  DBMS_OUTPUT.PUT_LINE ('Physician: '||lv_physid||' information is inserted.');
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+Physician: 101 information is updated.
+
+SQL> SELECT * FROM physician;
+
+   PHYS_ID PHYS_NAME       PHYS_PHONE      PHYS_SPECIALTY          
+---------- --------------- --------------- -------------------------
+       101 J.J             901-888-4453    ENT All.                 
+       102 Nusca, Jane     512-516-3947    Cardiovascular           
+       103 Gomez, Juan     512-382-4987    Orthopedics              
+       104 Li, Jan         512-516-3948    Cardiovascular           
+       105 Simmons, Alex   512-442-5700    Hemotology               
+       110 J.J             901-888-4453    ENT All.                 
+
+ 6 rows selected 
+
+SQL> /
+SQL> Spool off
+

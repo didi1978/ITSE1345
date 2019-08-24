@@ -1,0 +1,30 @@
+SQL> CREATE OR REPLACE PROCEDURE tax_cost_sp(
+    p_state  IN VARCHAR2,
+    p_subttl IN NUMBER,
+    p_tax OUT NUMBER)
+IS
+BEGIN
+  SELECT taxrate*p_subttl INTO p_tax FROM BB_TAX WHERE STATE=p_state;
+  SYS.DBMS_OUTPUT.PUT_LINE ('TAX AMOUNT: '||TO_CHAR(p_tax, '$99.99'));
+EXCEPTION
+  WHEN NO_DATA_FOUND THEN 
+  DBMS_OUTPUT.PUT_LINE ('TAX AMOUNT: $0.00.'); 
+  DBMS_OUTPUT.PUT_LINE ('The State is not listed in the tax table. No tax should be assessed on order.');
+END tax_cost_sp;
+/
+
+Procedure TAX_COST_SP compiled
+
+SQL> SET SERVEROUTPUT ON
+SQL> DECLARE
+lv_tax NUMBER (6,2);
+BEGIN
+ tax_cost_sp('VA',100,lv_tax);
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+TAX AMOUNT:   $4.50
+
+SQL> Spool OFF

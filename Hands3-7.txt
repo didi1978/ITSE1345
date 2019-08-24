@@ -1,0 +1,29 @@
+SQL> SET SERVEROUTPUT ON
+SQL> DECLARE
+  lv_bsk_id BB_BASKET.IDBASKET%TYPE;
+  lv_sub_ttl BB_BASKET.SUBTOTAL%TYPE;
+  lv_shipping BB_BASKET.SHIPPING%TYPE;
+  lv_tax BB_BASKET.TAX%TYPE;
+  lv_ttl BB_BASKET.TOTAL%TYPE;
+BEGIN
+  SELECT IDBASKET,SUBTOTAL, SHIPPING,TAX, TOTAL
+  INTO lv_bsk_id,lv_sub_ttl, lv_shipping, lv_tax, lv_ttl
+  FROM BB_BASKET
+  WHERE IDBASKET    =12;
+  DBMS_OUTPUT.PUT_LINE('BASKET# ' || lv_bsk_id);
+  DBMS_OUTPUT.PUT_LINE('Sub Total= ' || lv_sub_ttl);
+  DBMS_OUTPUT.PUT_LINE('Shipping Cost= ' || lv_shipping);
+  DBMS_OUTPUT.PUT_LINE('TAX= ' || lv_tax);
+  DBMS_OUTPUT.PUT_LINE('Total= ' || lv_ttl);
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+BASKET# 12
+Sub Total= 72.4
+Shipping Cost= 8
+TAX= 3.26
+Total= 83.66
+
+SQL> spool OFF

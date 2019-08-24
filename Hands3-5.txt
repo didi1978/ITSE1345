@@ -1,0 +1,24 @@
+SQL> SET SERVEROUTPUT ON
+SQL> DECLARE
+  lv_total_amt NUMBER(7,2) :=200;
+  lv_prodc_prc BB_Product.price%type ;
+  lv_spend_amt NUMBER(7,2) :=0;
+  lv_qty_buy   NUMBER(4)   :=0;
+BEGIN
+  SELECT PRICE INTO lv_prodc_prc FROM BB_product WHERE IDPRODUCT=4;
+  WHILE (lv_spend_amt+lv_prodc_prc)<lv_total_amt
+  LOOP
+    lv_spend_amt := lv_spend_amt+lv_prodc_prc;
+    lv_qty_buy   :=lv_qty_buy   +1;
+  END LOOP;
+  DBMS_OUTPUT.PUT_LINE('Total Spent = ' || lv_spend_amt);
+  DBMS_OUTPUT.PUT_LINE('# purchased = ' || lv_qty_buy);
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+Total Spent = 199.5
+# purchased = 7
+
+SQL> spool OFF

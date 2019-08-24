@@ -1,0 +1,16 @@
+SQL> select idbasket "Basket ID", idshopper "Shopper ID",to_char(dtordered, 'Month DD, YYYY')"Date Ordered"
+from bb_basket
+where dtordered between '01-feb-2012' and '28-feb-2012';
+
+ Basket ID Shopper ID Date Ordered                                
+---------- ---------- ---------------------------------------------
+         4         21 February  12, 2012                           
+         5         22 February  19, 2012                           
+         8         23 February  16, 2012                           
+        10         24 February  07, 2012                           
+        11         24 February  27, 2012                           
+        12         25 February  19, 2012                           
+
+ 6 rows selected 
+
+SQL> spool off

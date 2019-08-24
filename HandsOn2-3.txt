@@ -1,0 +1,29 @@
+SQL> DECLARE
+  v_shopper BB_BASKET.IDSHOPPER%type;
+  v_total BB_BASKET.TOTAL%Type ;
+  v_rate VARCHAR2(10);
+BEGIN
+  FOR v_shopper in 21..27 LOOP
+    SELECT SUM(total) INTO v_total FROM bb_Basket WHERE idshopper=v_shopper;
+      IF v_total > 200 THEN v_rate  :='High';
+      ELSIF v_total >100 AND v_total <=200 then v_rate := 'Mid';
+      ELSIF v_total <=100 then v_rate :='Low';
+      ELSE
+        v_rate:='Unknown';
+      END IF;
+    DBMS_OUTPUT.PUT_LINE('Shopper: '||v_shopper||', Total Purchase= $' ||v_total||', Rating: '||v_rate);
+  END LOOP;
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+Shopper: 21, Total Purchase= $66.76, Rating: Low
+Shopper: 22, Total Purchase= $210.21, Rating: High
+Shopper: 23, Total Purchase= $81.75, Rating: Low
+Shopper: 24, Total Purchase= $61.1, Rating: Low
+Shopper: 25, Total Purchase= $83.66, Rating: Low
+Shopper: 26, Total Purchase= $0, Rating: Low
+Shopper: 27, Total Purchase= $43.38, Rating: Low
+
+SQL> Spool off

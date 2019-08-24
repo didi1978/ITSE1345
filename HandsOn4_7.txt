@@ -1,0 +1,50 @@
+SQL> SET SERVEROUTPUT ON
+SQL> DECLARE
+  e EXCEPTION;
+  PRAGMA EXCEPTION_INIT (e, -20001);
+  lv_old_num NUMBER :=&enter_old_basketID;
+  lv_new_num NUMBER :=&enter_new_basketID;
+BEGIN
+  RAISE_APPLICATION_ERROR(-20001, 'Invalid original basket ID.');
+  UPDATE bb_basketitem
+   SET idBasket = lv_new_num
+   WHERE idBasket = lv_old_num;
+  EXCEPTION
+        WHEN e THEN
+          DBMS_OUTPUT.PUT_LINE(SQLERRM);
+END;
+/
+old:DECLARE
+  e EXCEPTION;
+  PRAGMA EXCEPTION_INIT (e, -20001);
+  lv_old_num NUMBER :=&enter_old_basketID;
+  lv_new_num NUMBER :=&enter_new_basketID;
+BEGIN
+  RAISE_APPLICATION_ERROR(-20001, 'Invalid original basket ID.');
+  UPDATE bb_basketitem
+   SET idBasket = lv_new_num
+   WHERE idBasket = lv_old_num;
+  EXCEPTION
+        WHEN e THEN
+          DBMS_OUTPUT.PUT_LINE(SQLERRM);
+END;
+new:DECLARE
+  e EXCEPTION;
+  PRAGMA EXCEPTION_INIT (e, -20001);
+  lv_old_num NUMBER :=30;
+  lv_new_num NUMBER :=4;
+BEGIN
+  RAISE_APPLICATION_ERROR(-20001, 'Invalid original basket ID.');
+  UPDATE bb_basketitem
+   SET idBasket = lv_new_num
+   WHERE idBasket = lv_old_num;
+  EXCEPTION
+        WHEN e THEN
+          DBMS_OUTPUT.PUT_LINE(SQLERRM);
+END;
+
+PL/SQL procedure successfully completed.
+
+ORA-20001: Invalid original basket ID.
+
+SQL> Spool OFF

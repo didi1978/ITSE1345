@@ -1,0 +1,64 @@
+SQL> SET SERVEROUTPUT ON
+SQL> DECLARE
+  CURSOR output_cur
+  IS
+    SELECT idproduct, productname, price, stock, reorder FROM bb_product;
+  rec_output output_cur%ROWTYPE;
+BEGIN
+  OPEN output_cur;
+  FETCH output_cur INTO rec_output;
+  WHILE output_cur%FOUND
+  LOOP
+    IF rec_output.stock > rec_output.reorder THEN
+      DBMS_OUTPUT.PUT_LINE('Product ' ||rec_output.idproduct
+      ||' - ' ||rec_output.productname ||' does NOT need ordering');
+      DBMS_OUTPUT.PUT_LINE('-------------------------------------');
+    ELSE
+      DBMS_OUTPUT.PUT_LINE('Product ' ||rec_output.idproduct
+      ||' - ' ||rec_output.productname);
+      DBMS_OUTPUT.PUT_LINE('Price '||rec_output.price);
+      DBMS_OUTPUT.PUT_LINE('Stock '||rec_output.stock);
+      DBMS_OUTPUT.PUT_LINE('Reorder '||rec_output.reorder);
+      DBMS_OUTPUT.PUT_LINE('-------------------------------------');
+    END IF;
+    FETCH output_cur INTO rec_output;
+  END LOOP;
+  CLOSE output_cur;
+EXCEPTION
+WHEN OTHERS THEN
+  DBMS_OUTPUT.PUT_LINE(SQLERRM);
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+Product 1 - CapressoBar Model #351 does NOT need ordering
+-------------------------------------
+Product 2 - Capresso Ultima does NOT need ordering
+-------------------------------------
+Product 3 - Eileen 4-cup French Press does NOT need ordering
+-------------------------------------
+Product 4 - Coffee Grinder
+Price 28.5
+Stock 24
+Reorder 25
+-------------------------------------
+Product 5 - Sumatra
+Price 10.5
+Stock 41
+Reorder 45
+-------------------------------------
+Product 6 - Guatamala does NOT need ordering
+-------------------------------------
+Product 7 - Columbia does NOT need ordering
+-------------------------------------
+Product 8 - Brazil does NOT need ordering
+-------------------------------------
+Product 9 - Ethiopia does NOT need ordering
+-------------------------------------
+Product 10 - Espresso
+Price 10
+Stock 50
+Reorder 50
+-------------------------------------
+

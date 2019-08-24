@@ -1,0 +1,33 @@
+SQL> CREATE OR REPLACE FUNCTION tot_purch_sf(
+    p_idshopper IN NUMBER)
+  RETURN NUMBER
+IS
+  lv_total NUMBER(8,2);
+BEGIN
+  SELECT SUM(total) INTO lv_total FROM bb_basket WHERE idshopper=p_idshopper;
+  RETURN lv_total;
+END;
+/
+
+Function TOT_PURCH_SF compiled
+
+SQL> Column (DOLLAR_FMT_SF(TOT_PURCH_SF(idshopper))) heading Total_Purchased format A20
+SQL> SELECT firstname,
+  lastname,
+  (DOLLAR_FMT_SF(TOT_PURCH_SF(idshopper)))
+FROM bb_shopper;
+
+FIRSTNAME            LASTNAME             Total_Purchased    
+-------------------- -------------------- --------------------
+John                 Carters                   $66.76         
+Margaret             Somners                  $284.95         
+Kenny                Ratmans                   $81.75         
+Camryn               Sonnies                   $61.10         
+Scott                Savids                    $83.66         
+Monica               Casts                       $.00         
+Pete                 Parkers                   $43.38         
+
+ 7 rows selected 
+
+SQL> /
+SQL> Spool off

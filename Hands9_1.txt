@@ -1,0 +1,68 @@
+SQL> CREATE OR REPLACE TRIGGER prod_reorder_trg AFTER
+  UPDATE OF stock ON bb_product FOR EACH ROW 
+  DECLARE 
+  v_onorder_num NUMBER (4);
+  BEGIN
+    IF :NEW.stock <= :New.reorder THEN
+      SELECT SUM(qty)
+      INTO v_onorder_num
+      FROM bb_product_request
+      WHERE idproduct   = :New.idproduct
+      AND dtRecd       IS NULL;
+      IF v_onorder_num IS NULL THEN
+        v_onorder_num  :=0;
+      END IF;
+      IF v_onorder_num =0 THEN
+        INSERT
+        INTO BB_PRODUCT_REQUEST
+          (
+            idrequest,
+            idproduct,
+            dtrequest,
+            qty
+          )
+          VALUES
+          (
+            BB_PRODREQ_SEQ.nextval,
+            :New.idproduct,
+            Sysdate,
+            :New.reorder
+          );
+      END IF;
+    END IF;
+  END;
+/
+
+Trigger PROD_REORDER_TRG compiled
+
+SQL> SELECT stock, reorder from bb_product
+where idproduct = 4;
+
+     STOCK    REORDER
+---------- ----------
+        26         25
+
+SQL> /
+SQL> UPDATE bb_product Set Stock = 25 Where idproduct =4;
+
+1 row updated.
+
+SQL> /
+SQL> Select * From bb_product_request;
+
+ IDREQUEST  IDPRODUCT DTREQUEST DTRECD          COST        QTY   IDVENDER
+---------- ---------- --------- --------- ---------- ---------- ----------
+         1          4 20-JUL-19                              25           
+
+SQL> /
+SQL> Rollback;
+
+Rollback complete.
+
+SQL> /
+SQL> ALTER TRIGGER prod_reorder_trg DISABLE;
+
+Trigger PROD_REORDER_TRG altered.
+
+SQL> /
+SQL> Spool off

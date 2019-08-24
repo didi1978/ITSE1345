@@ -1,0 +1,123 @@
+SQL> SET SERVEROUTPUT ON
+SQL> --Call the findpatient function
+SQL> --a valid patient ID
+SQL> BEGIN
+  IF (Hospital.FindPatient(1379)=TRUE) THEN
+  DBMS_OUTPUT.PUT_LINE('Patient is in the table.');
+  ELSE DBMS_OUTPUT.PUT_LINE('Patient is NOT in the table.'); 
+  END IF;
+  
+  --A valid patient name
+  IF (Hospital.FindPatient('Baker, Mary')=TRUE) THEN
+  DBMS_OUTPUT.PUT_LINE('Patient is in the table.');
+  ELSE DBMS_OUTPUT.PUT_LINE('Patient is NOT in the table.'); 
+  END IF;
+  
+  --A invalid patient ID
+  IF (Hospital.FindPatient(1380)=TRUE) THEN
+  DBMS_OUTPUT.PUT_LINE('Patient is in the table.');
+  ELSE DBMS_OUTPUT.PUT_LINE('Patient is NOT in the table.'); 
+  END IF;
+  
+  --Insert New physician into physician table.
+  Hospital.NewPhys(106, 'Ghanem, Claire', '512-888-9977', 'Pediatric');
+  --Attempt to insert a physician who is already in the table.
+  Hospital.NewPhys(106, 'Ghanem, Claire', '512-888-9977', 'Pediatric');
+
+EXCEPTION
+  WHEN Hospital.e_DupPhysFound THEN
+  DBMS_OUTPUT.PUT_LINE('Physician record duplicated.');
+
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+Patient is in the table.
+Patient is in the table.
+Patient is NOT in the table.
+Physician record duplicated.
+
+SQL> DECLARE
+  lv_trt Hospital.t_PatTrt;
+  lv_num_rows NUMBER;
+BEGIN
+  Hospital.BuildPatTbl(lv_trt, lv_num_rows);
+  DBMS_OUTPUT.PUT_LINE(lv_num_rows||' patients are selected.');
+  FOR i IN 1..lv_trt.COUNT LOOP
+  DBMS_OUTPUT.NEW_LINE;
+  DBMS_OUTPUT.PUT_LINE ('Patient: '||lv_trt(i).pat_nbr);
+  DBMS_OUTPUT.PUT_LINE ('Procedure: '||lv_trt(i).trt_procedure);
+  DBMS_OUTPUT.PUT_LINE ('Physician ID: '||lv_trt(i).phys_id);
+  DBMS_OUTPUT.PUT_LINE ('Physician Name: '||lv_trt(i).phys_name);
+  DBMS_OUTPUT.PUT_LINE ('Physician Specialty: '||lv_trt(i).Phys_Specialty);
+  END LOOP;
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+10 patients are selected.
+
+Patient: 3249
+Procedure: 13-08
+Physician ID: 101
+Physician Name: Wilcox, Chris
+Physician Specialty: Eyes, Ears, Throat
+
+Patient: 4500
+Procedure: 13-08
+Physician ID: 101
+Physician Name: Wilcox, Chris
+Physician Specialty: Eyes, Ears, Throat
+
+Patient: 8031
+Procedure: 52-14
+Physician ID: 102
+Physician Name: Nusca, Jane
+Physician Specialty: Cardiovascular
+
+Patient: 3249
+Procedure: 88-20
+Physician ID: 103
+Physician Name: Gomez, Juan
+Physician Specialty: Orthopedics
+
+Patient: 3249
+Procedure: 88-20
+Physician ID: 103
+Physician Name: Gomez, Juan
+Physician Specialty: Orthopedics
+
+Patient: 1379
+Procedure: 27-45
+Physician ID: 103
+Physician Name: Gomez, Juan
+Physician Specialty: Orthopedics
+
+Patient: 5116
+Procedure: 52-14
+Physician ID: 104
+Physician Name: Li, Jan
+Physician Specialty: Cardiovascular
+
+Patient: 8659
+Procedure: 60-00
+Physician ID: 104
+Physician Name: Li, Jan
+Physician Specialty: Cardiovascular
+
+Patient: 5116
+Procedure: 52-14
+Physician ID: 104
+Physician Name: Li, Jan
+Physician Specialty: Cardiovascular
+
+Patient: 5872
+Procedure: 60-00
+Physician ID: 105
+Physician Name: Simmons, Alex 
+Physician Specialty: Hemotology
+
+SQL> Spool off
+

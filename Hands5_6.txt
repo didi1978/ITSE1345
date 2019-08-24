@@ -1,0 +1,72 @@
+SQL> CREATE OR REPLACE PROCEDURE status_sp(
+    p_basketid IN bb_basketstatus.idbasket%type,
+    p_statusnote OUT VARCHAR2)
+AS
+  lv_stage bb_basketstatus.idstage%type;
+BEGIN
+  SELECT idstage
+  INTO lv_stage
+  FROM bb_basketstatus
+  WHERE idbasket=p_basketid
+  AND dtstage   =
+    (SELECT MAX(dtstage)FROM bb_basketstatus WHERE IDBASKET=p_basketid
+    );
+  CASE lv_stage
+  WHEN 1 THEN
+    p_statusnote :='Submitted and received.';
+  WHEN 2 THEN
+    p_statusnote :='Confirmed, processed, sent to shipping.';
+  WHEN 3 THEN
+    p_statusnote :='Shipped.';
+  WHEN 4 THEN
+    p_statusnote :='Cancelled.';
+  WHEN 5 THEN
+    p_statusnote :='Back-ordered.';
+  END CASE;
+  EXCEPTION
+  WHEN no_data_found THEN
+    p_statusnote:='No status available.';
+END status_sp;
+/
+
+Procedure STATUS_SP compiled
+
+SQL> SET SERVEROUTPUT ON
+SQL> DECLARE
+  lv_basketid BB_BASKETSTATUS.IDBASKET%type :=6;
+  lv_note VARCHAR2(50);
+  lv_date BB_BASKETSTATUS.DTSTAGE%type;
+BEGIN
+  SELECT MAX(dtstage)
+  INTO lv_date
+  FROM BB_BASKETSTATUS
+  WHERE IDBASKET=lv_basketid;
+  status_sp(lv_basketid,lv_note);
+  SYS.DBMS_OUTPUT.PUT_LINE('Order: '||lv_basketid||', most recent status '||lv_date||': '||lv_note);
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+Order: 6, most recent status : No status available.
+
+SQL> SET SERVEROUTPUT ON
+SQL> DECLARE
+  lv_basketid BB_BASKETSTATUS.IDBASKET%type :=4;
+  lv_note VARCHAR2(50);
+  lv_date BB_BASKETSTATUS.DTSTAGE%type;
+BEGIN
+  SELECT MAX(dtstage)
+  INTO lv_date
+  FROM BB_BASKETSTATUS
+  WHERE IDBASKET=lv_basketid;
+  status_sp(lv_basketid,lv_note);
+  SYS.DBMS_OUTPUT.PUT_LINE('Order: '||lv_basketid||', most recent status '||lv_date||': '||lv_note);
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+Order: 4, most recent status 14-FEB-12: Back-ordered.
+
+SQL> spool OFF

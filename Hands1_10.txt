@@ -1,0 +1,11 @@
+SQL> UPdate contacts 
+set e_mail = 'Jim@jbf.com' 
+where con_id=1;
+
+1 row updated.
+
+SQL> ROLLBACK;
+
+Rollback complete.
+
+SQL> Spool off

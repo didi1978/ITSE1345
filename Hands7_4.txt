@@ -1,0 +1,104 @@
+SQL> CREATE OR REPLACE FUNCTION ck_logon_sf(
+    p_user IN VARCHAR2,
+    p_pw   IN VARCHAR2)
+  RETURN VARCHAR2
+IS
+  match_num  NUMBER;
+  lv_valid   VARCHAR2(1);
+  ex_invalid EXCEPTION;
+BEGIN
+  SELECT COUNT(*)
+  INTO match_num
+  FROM bb_shopper
+  WHERE username=p_user
+  AND password  =p_pw;
+  IF match_num  =0 THEN
+    RAISE ex_invalid;
+  ELSIF match_num=1 THEN
+    lv_valid    :='Y';
+    RETURN lv_valid;
+  END IF;
+EXCEPTION
+WHEN ex_invalid THEN
+  dbms_output.put_line('Invalid username or password.');
+  lv_valid:='N';
+  RETURN lv_valid;
+END ck_logon_sf;
+/
+
+Function CK_LOGON_SF compiled
+
+SQL> SET SERVEROUTPUT ON
+SQL> DECLARE
+  fv_user bb_shopper.username%type:='gma1';
+  fv_pw bb_shopper.password%type  :='goofy';
+  lv_ck VARCHAR2(1);
+BEGIN
+  lv_ck :=ck_logon_sf(fv_user,fv_pw);
+  DBMS_OUTPUT.PUT_LINE(lv_ck);
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+Y
+
+SQL> CREATE OR REPLACE PACKAGE login_pkg
+IS
+  FUNCTION ck_logon_pf(
+      p_user IN VARCHAR2,
+      p_pw   IN VARCHAR2)
+    RETURN VARCHAR2;
+END login_pkg;
+/
+
+Package LOGIN_PKG compiled
+
+SQL> CREATE OR REPLACE PACKAGE BODY login_pkg
+IS
+  FUNCTION ck_logon_pf(
+      p_user IN VARCHAR2,
+      p_pw   IN VARCHAR2)
+    RETURN VARCHAR2
+  IS
+    match_num  NUMBER;
+    lv_valid   VARCHAR2(1);
+    ex_invalid EXCEPTION;
+  BEGIN
+    SELECT COUNT(*)
+    INTO match_num
+    FROM bb_shopper
+    WHERE username=p_user
+    AND password  =p_pw;
+    IF match_num  =0 THEN
+      RAISE ex_invalid;
+    ELSIF match_num=1 THEN
+      lv_valid    :='Y';
+      RETURN lv_valid;
+    END IF;
+  EXCEPTION
+  WHEN ex_invalid THEN
+    dbms_output.put_line('Invalid username or password.');
+    lv_valid:='N';
+    RETURN lv_valid;
+  END ck_logon_pf;
+END login_pkg;
+/
+
+Package body LOGIN_PKG compiled
+
+SQL> SET SERVEROUTPUT ON
+SQL> DECLARE
+  fv_user bb_shopper.username%type:='gma1';
+  fv_pw bb_shopper.password%type  :='goofy';
+  lv_ck VARCHAR2(1);
+BEGIN
+  lv_ck :=LOGIN_PKG.ck_logon_pf(fv_user,fv_pw);
+  DBMS_OUTPUT.PUT_LINE(lv_ck);
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+Y
+SQL> Spool off

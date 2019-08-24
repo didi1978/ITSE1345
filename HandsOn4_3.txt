@@ -1,0 +1,31 @@
+SQL> UPDATE bb_shopper
+  SET promo = NULL;
+
+7 rows updated.
+
+SQL> UPDATE bb_shopper
+  SET promo = 'B'
+  WHERE idShopper IN (21,23,25);
+
+3 rows updated.
+
+SQL> UPDATE bb_shopper
+  SET promo = 'A'
+  WHERE idShopper = 22;
+
+1 row updated.
+
+SQL> COMMIT;
+
+Commit complete.
+
+SQL> BEGIN
+ UPDATE bb_shopper
+  SET promo = NULL
+  WHERE promo IS NOT NULL;
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+SQL> Spool OFF

@@ -1,0 +1,46 @@
+SQL> CREATE OR REPLACE TRIGGER reorder AFTER
+UPDATE OF STOCK ON bb_product FOR EACH ROW 
+WHEN (new.stock<old.reorder)
+BEGIN
+  DBMS_ALERT.SIGNAL('reorder','Reorder product ID: '||TO_CHAR(:new.idproduct));
+END;
+/
+
+Trigger REORDER compiled
+
+SQL> BEGIN
+  DBMS_ALERT.REGISTER('reorder');
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+SQL> UPDATE bb_product   --under another session
+SET stock=stock-2
+Where idproduct=4;
+
+1 row updated.
+
+SQL> COMMIT;
+
+Commit complete.
+
+SQL> SET SERVEROUTPUT ON
+SQL> DECLARE
+    lv_msg_txt    VARCHAR2(25);
+    lv_status_num NUMBER(1);
+BEGIN
+    DBMS_ALERT.WAITONE('reorder',lv_msg_txt, lv_status_num, 120);
+    SYS.DBMS_OUTPUT.PUT_LINE('Alert: '||lv_msg_txt);
+    SYS.DBMS_OUTPUT.PUT_LINE('Status: '||lv_status_num);
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+Alert: Reorder product ID: 4
+Status: 0
+
+
+
+SQL> Spool off

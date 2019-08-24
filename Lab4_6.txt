@@ -1,0 +1,87 @@
+SQL> SET SERVEROUTPUT ON
+SQL> CREATE TABLE trt_stats (
+trt_procedure VARCHAR2(5) PRIMARY KEY,
+trt_ins_count NUMBER(3),
+trt_del_count NUMBER(3),
+trt_upd_count NUMBER(3));
+
+Table TRT_STATS created.
+
+SQL> /
+SQL> DESCRIBE trt_stats;
+
+Name          Null     Type        
+------------- -------- ----------- 
+TRT_PROCEDURE NOT NULL VARCHAR2(5) 
+TRT_INS_COUNT          NUMBER(3)   
+TRT_DEL_COUNT          NUMBER(3)   
+TRT_UPD_COUNT          NUMBER(3)   
+SQL> /
+SQL> CREATE OR REPLACE TRIGGER trt_stats_trg
+BEFORE INSERT OR UPDATE OR DELETE ON TREATMENT FOR EACH ROW
+BEGIN
+IF INSERTING THEN
+  UPDATE trt_stats SET trt_ins_count = trt_ins_count+1
+    WHERE :old.trt_procedure = :new.trt_procedure;
+  IF SQL%NOTFOUND THEN
+    INSERT INTO trt_stats (trt_procedure, trt_ins_count) 
+    VALUES (:new.trt_procedure, 1);    
+  END IF;
+END IF;
+
+IF UPDATING THEN
+  UPDATE trt_stats SET trt_upd_count = trt_upd_count+1
+  WHERE trt_procedure = :old.trt_procedure;
+  IF SQL%NOTFOUND THEN
+    INSERT INTO trt_stats (trt_procedure, trt_upd_count) 
+    VALUES (:old.trt_procedure, 1);
+    END IF;
+  UPDATE trt_stats SET trt_upd_count = trt_upd_count+1
+  WHERE trt_procedure = :new.trt_procedure;
+  IF SQL%NOTFOUND THEN
+    INSERT INTO trt_stats (trt_procedure, trt_upd_count) 
+    VALUES (:new.trt_procedure, 1);
+    END IF;
+END IF;
+
+IF DELETING THEN
+  UPDATE trt_stats SET trt_del_count = trt_del_count+1
+  WHERE trt_procedure = :old.trt_procedure;
+  IF SQL%NOTFOUND THEN
+    INSERT INTO trt_stats (trt_procedure, trt_del_count) 
+    VALUES (:old.trt_procedure, 1);
+  END IF;
+END IF;
+END trt_stats_trg;
+/
+
+Trigger TRT_STATS_TRG compiled
+
+SQL> INSERT INTO treatment VALUES (treatid_seq.nextval, 8031,101,'88-20',sysdate );
+
+1 row inserted.
+
+SQL> INSERT INTO treatment VALUES (treatid_seq.nextval, 5872,101,'60-00',sysdate );
+
+1 row inserted.
+
+SQL> UPDATE treatment SET trt_procedure = '88-20' WHERE trt_id=6;
+
+1 row updated.
+
+SQL> DELETE FROM treatment WHERE trt_id=1;
+
+1 row deleted.
+
+SQL> /
+SQL> SELECT * FROM trt_stats Order BY trt_procedure;
+
+TRT_P TRT_INS_COUNT TRT_DEL_COUNT TRT_UPD_COUNT
+----- ------------- ------------- -------------
+13-08                           1              
+52-14                                         1
+60-00             1                            
+88-20             1                            
+
+SQL> /
+SQL> Spool OFF

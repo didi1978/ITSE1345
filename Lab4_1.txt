@@ -1,0 +1,69 @@
+SQL> SET SERVEROUTPUT ON
+SQL> CREATE OR REPLACE PROCEDURE fd_purchase(
+    v_cust_id  IN purchase_order.cust_id%type,
+    v_cust_id2 IN purchase_order.cust_id%type)
+IS
+  CURSOR purchase_cur (p_custid NUMBER)IS
+    SELECT DISTINCT cust_id FROM purchase_order WHERE cust_id = p_custid
+    ORDER BY cust_id;
+  rec_pur purchase_cur%ROWTYPE;
+  lv_custid NUMBER;
+BEGIN
+  SYS.DBMS_OUTPUT.PUT_LINE('Range: '||v_cust_id||' to '||v_cust_id2);
+  IF v_cust_id < v_cust_id2 THEN
+    FOR lv_custid IN v_cust_id..v_cust_id2 LOOP
+      OPEN purchase_cur(lv_custid);
+      FETCH purchase_cur INTO rec_pur;
+        IF purchase_cur%FOUND THEN
+          DBMS_OUTPUT.PUT_LINE(lv_custid||' has a purchase order.');
+        ELSE
+          DBMS_OUTPUT.PUT_LINE(lv_custid||' does not have a purchase order.');
+        END IF;
+      CLOSE purchase_cur;
+    END LOOP;
+  ELSE
+    DBMS_OUTPUT.PUT_LINE('Error. First customer id value must be less than second.');
+  END IF;
+END;
+/
+
+Procedure FD_PURCHASE compiled
+
+SQL> BEGIN
+  fd_purchase(80001,80008);
+  DBMS_OUTPUT.NEW_LINE;
+  fd_purchase(80003,80007);
+  DBMS_OUTPUT.NEW_LINE;
+  fd_purchase(80009,80010);
+  DBMS_OUTPUT.NEW_LINE;
+  fd_purchase(80005,80004);
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+Range: 80001 to 80008
+80001 has a purchase order.
+80002 does not have a purchase order.
+80003 does not have a purchase order.
+80004 has a purchase order.
+80005 has a purchase order.
+80006 does not have a purchase order.
+80007 has a purchase order.
+80008 has a purchase order.
+
+Range: 80003 to 80007
+80003 does not have a purchase order.
+80004 has a purchase order.
+80005 has a purchase order.
+80006 does not have a purchase order.
+80007 has a purchase order.
+
+Range: 80009 to 80010
+80009 does not have a purchase order.
+80010 does not have a purchase order.
+
+Range: 80005 to 80004
+Error. First customer id value must be less than second.
+
+SQL> Spool OFF

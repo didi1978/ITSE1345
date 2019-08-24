@@ -1,0 +1,27 @@
+SQL> Column total format A10
+SQL> Column Rating format A10
+SQL> SELECT idshopper,SUM(total)Total,
+  (CASE
+    WHEN SUM(total)>200
+    THEN 'High'
+    WHEN SUM(total)>100 AND SUM(total)<=200
+    THEN 'Mid'
+    ELSE 'Low'
+  END)As Rating 
+FROM bb_basket
+GROUP BY idshopper
+Order by total desc;
+
+ IDSHOPPER      TOTAL RATING   
+---------- ---------- ----------
+        22     210.21 High      
+        25      83.66 Low       
+        23      81.75 Low       
+        21      66.76 Low       
+        24       61.1 Low       
+        27      43.38 Low       
+        26          0 Low       
+
+ 7 rows selected 
+
+SQL> Spool off

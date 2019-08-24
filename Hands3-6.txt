@@ -1,0 +1,62 @@
+SQL> SET SERVEROUTPUT ON
+SQL> DECLARE
+  lv_ttl_qty BB_BASKET.QUANTITY%TYPE;
+  lv_bsk_id  BB_BASKET.IDBASKET%TYPE;
+  lv_shipping NUMBER(6,2);
+BEGIN
+  SELECT IDBASKET,
+    QUANTITY
+  INTO lv_bsk_id,
+    lv_ttl_qty
+  FROM BB_BASKET
+  WHERE IDBASKET    =5;
+    IF lv_ttl_qty    <=3 THEN
+      lv_shipping    :=5;
+      ELSIF lv_ttl_qty >=4 AND lv_ttl_qty<=6 THEN
+        lv_shipping    :=7.5;
+      ELSIF lv_ttl_qty >=7 AND lv_ttl_qty<=10 THEN
+        lv_shipping    :=10;
+      ELSIF lv_ttl_qty  >10 THEN
+        lv_shipping    :=12;
+    END IF;
+  DBMS_OUTPUT.PUT_LINE('BASKET# ' || lv_bsk_id);
+  DBMS_OUTPUT.PUT_LINE('Shipping Cost= ' || lv_shipping);
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+BASKET# 5
+Shipping Cost= 7.5
+
+SQL> DECLARE
+  lv_ttl_qty BB_BASKET.QUANTITY%TYPE;
+  lv_bsk_id  BB_BASKET.IDBASKET%TYPE;
+  lv_shipping NUMBER(6,2);
+BEGIN
+  SELECT IDBASKET,
+    QUANTITY
+  INTO lv_bsk_id,
+    lv_ttl_qty
+  FROM BB_BASKET
+  WHERE IDBASKET    =12;
+    IF lv_ttl_qty    <=3 THEN
+      lv_shipping    :=5;
+      ELSIF lv_ttl_qty >=4 AND lv_ttl_qty<=6 THEN
+        lv_shipping    :=7.5;
+      ELSIF lv_ttl_qty >=7 AND lv_ttl_qty<=10 THEN
+        lv_shipping    :=10;
+      ELSIF lv_ttl_qty  >10 THEN
+        lv_shipping    :=12;
+    END IF;
+  DBMS_OUTPUT.PUT_LINE('BASKET# ' || lv_bsk_id);
+  DBMS_OUTPUT.PUT_LINE('Shipping Cost= ' || lv_shipping);
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+BASKET# 12
+Shipping Cost= 10
+
+SQL> spool OFF

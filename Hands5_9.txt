@@ -1,0 +1,52 @@
+SQL> CREATE OR REPLACE PROCEDURE member_ck_sp(
+    p_user IN bb_shopper.username%type,
+    p_pw   IN bb_shopper.password%type)
+IS
+  lv_fullname VARCHAR2 (50);
+  fail_msg VARCHAR2(50) :='Invalid User Name';
+  CURSOR member_cur IS
+    SELECT firstname, lastname, cookie, username, password
+    FROM bb_shopper
+    WHERE Upper(username)=Upper(p_user)
+    AND password         =p_pw;
+BEGIN
+  lv_fullname :=fail_msg;
+  FOR member_rec IN member_cur LOOP
+    lv_fullname :=member_rec.firstname ||' '||member_rec.lastname;
+    DBMS_OUTPUT.PUT_LINE('Welcome: '|| lv_fullname ||' ,Cookie: '||member_rec.cookie);
+  END LOOP;
+  IF lv_fullname = fail_msg THEN
+    dbms_output.put_line (fail_msg);
+  END IF;
+END member_ck_sp;
+/
+
+Procedure MEMBER_CK_SP compiled
+
+SQL> SET SERVEROUTPUT ON
+SQL> DECLARE
+lv_user BB_SHOPPER.USERNAME%Type :='rat55';
+lv_pw   BB_SHOPPER.PASSWORD%TYPE :='kile';
+BEGIN
+  member_ck_sp(lv_user,lv_pw);
+end;
+/
+
+PL/SQL procedure successfully completed.
+
+Welcome: Kenny Ratmans ,Cookie: 0
+
+SQL> SET SERVEROUTPUT ON
+SQL> DECLARE
+lv_user BB_SHOPPER.USERNAME%Type :='rat';
+lv_pw   BB_SHOPPER.PASSWORD%TYPE :='kile';
+BEGIN
+  member_ck_sp(lv_user,lv_pw);
+end;
+/
+
+PL/SQL procedure successfully completed.
+
+Invalid User Name
+
+SQL> Spool off

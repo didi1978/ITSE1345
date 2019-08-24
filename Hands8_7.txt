@@ -1,0 +1,9 @@
+Assignment 8-7: Avoiding Recompilation Errors
+
+1) Use %Type and %Rowtype attibutes in variable declaration type. The technique
+can prevent from data type not compatible errors if a baselined table column
+type changed.
+
+2) Use SELECT * instead of named column list when querying data from the database.
+It can prevent erorrs happen if the referenced table structures or columns changed.
+

@@ -1,0 +1,64 @@
+SQL> INSERT INTO bb_product_request (idrequest, idproduct, dtrequest, qty)
+Values (3,5,sysdate, 45);
+
+1 row inserted.
+
+SQL> Commit;
+
+Commit complete.
+
+SQL> /
+SQL> CREATE OR REPLACE TRIGGER bb_reqfill_trg AFTER
+  UPDATE OF dtrecd ON bb_product_request FOR EACH ROW 
+  BEGIN
+    UPDATE bb_product
+    SET stock = :new.qty + stock
+    where idproduct = :new.idproduct;
+  END;
+/
+
+Trigger BB_REQFILL_TRG compiled
+
+SQL> Select stock, reorder from bb_product where idproduct = 5;
+
+     STOCK    REORDER
+---------- ----------
+        41         45
+
+SQL> /
+SQL> Select * from bb_product_request where idproduct = 5;
+
+ IDREQUEST  IDPRODUCT DTREQUEST DTRECD          COST        QTY   IDVENDER
+---------- ---------- --------- --------- ---------- ---------- ----------
+         3          5 20-JUL-19                              45           
+
+SQL> /
+SQL> Update BB_PRODUCT_REQUEST SET DTRECD = Sysdate, Cost = 225
+Where IDREQUEST = 3;
+
+1 row updated.
+
+SQL> /
+SQL> Select * From BB_PRODUCT_REQUEST where idproduct = 5;
+
+ IDREQUEST  IDPRODUCT DTREQUEST DTRECD          COST        QTY   IDVENDER
+---------- ---------- --------- --------- ---------- ---------- ----------
+         3          5 20-JUL-19 20-JUL-19        225         45           
+
+SQL> /
+SQL> Select Stock, Reorder from bb_product where idproduct = 5;
+
+     STOCK    REORDER
+---------- ----------
+        86         45
+
+SQL> /
+SQL> Rollback;
+
+Rollback complete.
+
+SQL> ALter TRIGGER bb_reqfill_trg DISABLE;
+
+Trigger BB_REQFILL_TRG altered.
+
+SQL> Spool off

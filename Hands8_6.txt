@@ -1,0 +1,239 @@
+SQL> --utldtree.sql
+SQL> Rem 
+SQL> Rem $Header: utldtree.sql,v 1.2 1992/10/26 16:24:44 RKOOI Stab $ 
+SQL> Rem 
+SQL> Rem  Copyright (c) 1991 by Oracle Corporation 
+SQL> Rem    NAME
+SQL> Rem      deptree.sql - Show objects recursively dependent on given object
+SQL> Rem    DESCRIPTION
+SQL> Rem      This procedure, view and temp table will allow you to see all
+SQL> Rem      objects that are (recursively) dependent on the given object.
+SQL> Rem      Note: you will only see objects for which you have permission.
+SQL> Rem      Examples:
+SQL> Rem        execute deptree_fill('procedure', 'scott', 'billing')
+SQL> Rem        select * from deptree order by seq#
+SQL> Rem
+SQL> Rem        execute deptree_fill('table', 'scott', 'emp')
+SQL> Rem        select * from deptree order by seq#
+SQL> Rem
+SQL> Rem        execute deptree_fill('package body', 'scott', 'accts_payable')
+SQL> Rem        select * from deptree order by seq#
+SQL> Rem
+SQL> Rem        A prettier way to display this information than
+SQL> Rem		select * from deptree order by seq#
+SQL> Rem	   is
+SQL> Rem             select * from ideptree
+SQL> Rem        This shows the dependency relationship via indenting.  Notice
+SQL> Rem        that no order by clause is needed with ideptree.
+SQL> Rem    RETURNS
+SQL> Rem 
+SQL> Rem    NOTES
+SQL> Rem      Run this script once for each schema that needs this utility.
+SQL> Rem      
+SQL> Rem    MODIFIED   (MM/DD/YY)
+SQL> Rem     rkooi      10/26/92 -  owner -> schema for SQL2 
+SQL> Rem     glumpkin   10/20/92 -  Renamed from DEPTREE.SQL 
+SQL> Rem     rkooi      09/02/92 -  change ORU errors 
+SQL> Rem     rkooi      06/10/92 -  add rae errors 
+SQL> Rem     rkooi      01/13/92 -  update for sys vs. regular user 
+SQL> Rem     rkooi      01/10/92 -  fix ideptree 
+SQL> Rem     rkooi      01/10/92 -  Better formatting, add ideptree view 
+SQL> Rem     rkooi      12/02/91 -  deal with cursors 
+SQL> Rem     rkooi      10/19/91 -  Creation 
+SQL> drop sequence deptree_seq;
+
+Error starting at line : 45 in command -
+drop sequence deptree_seq
+Error report -
+SQL Error: ORA-02289: sequence does not exist
+02289. 00000 -  "sequence does not exist"
+*Cause:    The specified sequence does not exist, or the user does
+           not have the required privilege to perform this operation.
+*Action:   Make sure the sequence name is correct, and that you have
+           the right to perform the desired operation on this sequence.
+SQL> create sequence deptree_seq cache 200 /* cache 200 to make sequence faster */;
+
+Sequence DEPTREE_SEQ created.
+
+SQL> drop table deptree_temptab;
+
+Error starting at line : 49 in command -
+drop table deptree_temptab
+Error report -
+SQL Error: ORA-00942: table or view does not exist
+00942. 00000 -  "table or view does not exist"
+*Cause:    
+*Action:
+SQL> create table deptree_temptab
+(
+  object_id            number,
+  referenced_object_id number,
+  nest_level           number,
+  seq#                 number      
+);
+
+Table DEPTREE_TEMPTAB created.
+
+SQL> create or replace procedure deptree_fill (type char, schema char, name char) is
+  obj_id number;
+begin
+  delete from deptree_temptab;
+  commit;
+  select object_id into obj_id from all_objects
+    where owner        = upper(deptree_fill.schema)
+    and   object_name  = upper(deptree_fill.name)
+    and   object_type  = upper(deptree_fill.type);
+  insert into deptree_temptab
+    values(obj_id, 0, 0, 0);
+  insert into deptree_temptab
+    select object_id, referenced_object_id,
+        level, deptree_seq.nextval
+      from public_dependency
+      connect by prior object_id = referenced_object_id
+      start with referenced_object_id = deptree_fill.obj_id;
+exception
+  when no_data_found then
+    raise_application_error(-20000, 'ORU-10013: ' ||
+      type || ' ' || schema || '.' || name || ' was not found.');
+end;
+/
+
+Procedure DEPTREE_FILL compiled
+
+SQL> drop view deptree;
+
+Error starting at line : 83 in command -
+drop view deptree
+Error report -
+SQL Error: ORA-00942: table or view does not exist
+00942. 00000 -  "table or view does not exist"
+*Cause:    
+*Action:
+SQL> set echo on
+SQL> REM This view will succeed if current user is sys.  This view shows 
+SQL> REM which shared cursors depend on the given object.  If the current
+SQL> REM user is not sys, then this view get an error either about lack
+SQL> REM of privileges or about the non-existence of table x$kglxs.
+SQL> set echo off
+SQL> create view sys.deptree
+  (nested_level, type, schema, name, seq#)
+as
+  select d.nest_level, o.object_type, o.owner, o.object_name, d.seq#
+  from deptree_temptab d, dba_objects o
+  where d.object_id = o.object_id (+)
+union all
+  select d.nest_level+1, 'CURSOR', '<shared>', '"'||c.kglnaobj||'"', d.seq#+.5
+  from deptree_temptab d, x$kgldp k, x$kglob g, obj$ o, user$ u, x$kglob c,
+      x$kglxs a
+    where d.object_id = o.obj#
+    and   o.name = g.kglnaobj
+    and   o.owner# = u.user#
+    and   u.name = g.kglnaown
+    and   g.kglhdadr = k.kglrfhdl
+    and   k.kglhdadr = a.kglhdadr   /* make sure it is not a transitive */
+    and   k.kgldepno = a.kglxsdep   /* reference, but a direct one */
+    and   k.kglhdadr = c.kglhdadr
+    and   c.kglhdnsp = 0 /* a cursor */;
+
+Error starting at line : 94 in command -
+create view sys.deptree
+  (nested_level, type, schema, name, seq#)
+as
+  select d.nest_level, o.object_type, o.owner, o.object_name, d.seq#
+  from deptree_temptab d, dba_objects o
+  where d.object_id = o.object_id (+)
+union all
+  select d.nest_level+1, 'CURSOR', '<shared>', '"'||c.kglnaobj||'"', d.seq#+.5
+  from deptree_temptab d, x$kgldp k, x$kglob g, obj$ o, user$ u, x$kglob c,
+      x$kglxs a
+    where d.object_id = o.obj#
+    and   o.name = g.kglnaobj
+    and   o.owner# = u.user#
+    and   u.name = g.kglnaown
+    and   g.kglhdadr = k.kglrfhdl
+    and   k.kglhdadr = a.kglhdadr   /* make sure it is not a transitive */
+    and   k.kgldepno = a.kglxsdep   /* reference, but a direct one */
+    and   k.kglhdadr = c.kglhdadr
+    and   c.kglhdnsp = 0 /* a cursor */
+Error report -
+SQL Error: ORA-00942: table or view does not exist
+00942. 00000 -  "table or view does not exist"
+*Cause:    
+*Action:
+SQL> set echo on
+SQL> REM This view will succeed if current user is not sys.  This view
+SQL> REM does *not* show which shared cursors depend on the given object.
+SQL> REM If the current user is sys then this view will get an error 
+SQL> REM indicating that the view already exists (since prior view create
+SQL> REM will have succeeded).
+SQL> set echo off
+SQL> create view deptree
+  (nested_level, type, schema, name, seq#)
+as
+  select d.nest_level, o.object_type, o.owner, o.object_name, d.seq#
+  from deptree_temptab d, all_objects o
+  where d.object_id = o.object_id (+);
+
+View DEPTREE created.
+
+SQL> drop view ideptree;
+
+Error starting at line : 132 in command -
+drop view ideptree
+Error report -
+SQL Error: ORA-00942: table or view does not exist
+00942. 00000 -  "table or view does not exist"
+*Cause:    
+*Action:
+SQL> create view ideptree (dependencies)
+as
+  select lpad(' ',3*(max(nested_level))) || max(nvl(type, '<no permission>')
+    || ' ' || schema || decode(type, NULL, '', '.') || name)
+  from deptree
+  group by seq# /* So user can omit sort-by when selecting from ideptree */;
+
+View IDEPTREE created.
+
+SQL> --utldtree.sql
+SQL> EXECUTE deptree_fill('TABLE','BREWBEANS','BB_BASKET')
+
+PL/SQL procedure successfully completed.
+
+SQL> /
+SQL> SELECT nested_level, name, type, seq# FROM deptree ORDER BY Seq#;
+
+                           NESTED_LEVEL NAME                           TYPE                      SEQ#
+--------------------------------------- ------------------------------ ------------------- ----------
+                                      0 BB_BASKET                      TABLE                        0
+                                      1 BB_SHIP_VU                     VIEW                         1
+                                      1 BASKET_CONFIRM_SP              PROCEDURE                    2
+                                      1 STATUS_SP                      PROCEDURE                    3
+                                      1 PROMO_SHIP_SP                  PROCEDURE                    4
+                                      1 ORDER_INFO_PKG                 PACKAGE BODY                 5
+                                      1 TAX_CALC2_SF                   FUNCTION                     6
+                                      2 BASK_CALC_SP                   PROCEDURE                    7
+                                      1 BASK_CALC_SP                   PROCEDURE                    8
+                                      1 PROMO_TEST_SP                  PROCEDURE                    9
+
+ 10 rows selected 
+
+SQL> /
+SQL> SELECT * FROM IDEPTREE;
+
+DEPENDENCIES                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+   VIEW BREWBEANS.BB_SHIP_VU                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+   FUNCTION BREWBEANS.TAX_CALC2_SF                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+   PROCEDURE BREWBEANS.BASKET_CONFIRM_SP                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+   PROCEDURE BREWBEANS.PROMO_SHIP_SP                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+   PACKAGE BODY BREWBEANS.ORDER_INFO_PKG                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+   PROCEDURE BREWBEANS.BASK_CALC_SP                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+   PROCEDURE BREWBEANS.STATUS_SP                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+      PROCEDURE BREWBEANS.BASK_CALC_SP                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
+TABLE BREWBEANS.BB_BASKET                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
+   PROCEDURE BREWBEANS.PROMO_TEST_SP                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+
+ 10 rows selected 
+
+SQL> /
+SQL> Spool OFF

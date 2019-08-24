@@ -1,0 +1,35 @@
+SQL> CREATE OR REPLACE FUNCTION status_desc_sf(
+    p_stage IN BB_BASKETSTATUS.IDSTAGE%type)
+  RETURN VARCHAR2
+IS
+  lv_desc VARCHAR2(50);
+BEGIN
+  IF p_stage    = 1 THEN
+    lv_desc    :='Order Submitted';
+  ELSIF p_stage = 2 THEN
+    lv_desc    :='Accepted. Sent to shipping.';
+  ELSIF p_stage = 3 THEN
+    lv_desc    :='Back Ordered.';
+  ELSIF p_stage = 4 THEN
+    lv_desc    :='Cancelled';
+  ELSIF p_stage = 5 THEN
+    lv_desc    :='Shipped.';
+  END IF;
+RETURN lv_desc;
+END status_desc_sf;
+/
+
+Function STATUS_DESC_SF compiled
+
+SQL> Column status_desc_sf(IDSTAGE) heading 'Stage Description' Format A30
+SQL> Column dtstage heading 'Date' Format A20
+SQL> SELECT idbasket, status_desc_sf(IDSTAGE), DTSTAGE FROM bb_basketstatus
+Where idbasket=4;
+
+  IDBASKET Stage Description              Date               
+---------- ------------------------------ --------------------
+         4 Order Submitted                13-FEB-12           
+         4 Shipped.                       13-FEB-12           
+
+SQL> /
+SQL> Spool off

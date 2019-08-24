@@ -1,0 +1,42 @@
+SQL> DECLARE
+  lv_balance NUMBER (8,2) ;
+  lv_payment NUMBER (8,2) ;
+  lv_due     BOOLEAN NOT NULL := FALSE;
+BEGIN
+    lv_balance :=&enter_balance;
+    lv_payment := &enter_payment;
+    IF (lv_balance-lv_payment)>0 THEN lv_due:=TRUE;
+      dbms_output.put_line ('The amount is still owed.');
+      ELSE
+      dbms_output.put_line ('The amount is paid in full.');
+    END IF;
+END;
+/
+old:DECLARE
+  lv_balance NUMBER (8,2)     := &enter_balance;
+  lv_payment NUMBER (8,2)     := &enter_payment;
+  lv_due     BOOLEAN NOT NULL := FALSE;
+BEGIN
+    IF (lv_balance-lv_payment)>0 THEN lv_due:=TRUE;
+      dbms_output.put_line ('The amount is still owed.');
+      ELSE
+      dbms_output.put_line ('The amount is paid in full.');
+    END IF;
+END;
+new:DECLARE
+  lv_balance NUMBER (8,2)     := 100;
+  lv_payment NUMBER (8,2)     := 90;
+  lv_due     BOOLEAN NOT NULL := FALSE;
+BEGIN
+    IF (lv_balance-lv_payment)>0 THEN lv_due:=TRUE;
+      dbms_output.put_line ('The amount is still owed.');
+      ELSE
+      dbms_output.put_line ('The amount is paid in full.');
+    END IF;
+END;
+
+PL/SQL procedure successfully completed.
+
+The amount is still owed.
+
+SQL> Spool off

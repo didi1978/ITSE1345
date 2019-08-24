@@ -1,0 +1,28 @@
+SQL> CREATE OR REPLACE FUNCTION num_purch_sf(
+    p_idshopper IN NUMBER)
+  RETURN NUMBER
+IS
+  lv_count NUMBER(10);
+BEGIN
+  SELECT COUNT(idbasket)
+  INTO lv_count
+  FROM bb_basket
+  WHERE orderplaced =1
+  AND idshopper     =p_idshopper;
+  RETURN lv_count;
+END;
+/
+
+Function NUM_PURCH_SF compiled
+
+SQL> SELECT idshopper   AS Shopper,
+  num_purch_sf(23) AS Num_orders
+FROM bb_shopper
+WHERE idshopper=23;
+
+   SHOPPER NUM_ORDERS
+---------- ----------
+        23          3
+
+SQL> /
+SQL> spool OFF

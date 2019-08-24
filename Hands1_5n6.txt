@@ -1,0 +1,27 @@
+SQL> select Idproduct "Product ID", sum(quantity)"Total Quantity Sold"
+from BB_BASKETITEM
+group by IDPRODUCT;
+
+Product ID                     Total Quantity Sold
+---------- ---------------------------------------
+         6                                       4
+         2                                       1
+         4                                       2
+         8                                      11
+         7                                       7
+         9                                       6
+        10                                       3
+
+ 7 rows selected 
+
+SQL> select Idproduct "Product ID", sum(quantity)"Total Quantity Sold"
+from BB_BASKETITEM
+group by IDPRODUCT
+HAVING sum(QUANTITY)<3;
+
+Product ID                     Total Quantity Sold
+---------- ---------------------------------------
+         2                                       1
+         4                                       2
+
+SQL> spool off

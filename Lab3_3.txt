@@ -1,0 +1,49 @@
+SQL> CREATE OR REPLACE PROCEDURE cus_info_sp(
+    p_acctid IN customer.account_id%type,
+    rec_cus OUT customer%rowtype)
+IS
+BEGIN
+  SELECT * INTO rec_cus FROM customer WHERE account_id=p_acctid;
+EXCEPTION
+WHEN no_data_found THEN
+  dbms_output.put_line('CUST_ID not valid.');
+  rec_cus.cust_id     :=99999;
+  rec_cus.cust_name   :='XXXXX';
+  rec_cus.account_id  :=p_acctid;
+  rec_cus.account_type:='XX';
+  rec_cus.state       :='xx';
+END cus_info_sp;
+/
+
+Procedure CUS_INFO_SP compiled
+
+SQL> SET SERVEROUTPUT ON
+SQL> DECLARE
+  lv_accid customer.account_id%type;
+  rec_cus customer%rowtype;
+BEGIN
+  lv_accid:='A-11101';
+  cus_info_sp(lv_accid,rec_cus);
+  SYS.DBMS_OUTPUT.PUT_LINE ('CustomerID:'||rec_cus.cust_id 
+  ||', Customer Name:'||rec_cus.cust_name 
+  ||', Account ID:'||rec_cus.account_id 
+  ||', Account Type:'||rec_cus.account_type 
+  ||', State:'||rec_cus.state);
+  
+  lv_accid:='A-11110';
+  cus_info_sp(lv_accid,rec_cus);
+  SYS.DBMS_OUTPUT.PUT_LINE ('CustomerID:'||rec_cus.cust_id 
+  ||', Customer Name:'||rec_cus.cust_name 
+  ||', Account ID:'||rec_cus.account_id 
+  ||', Account Type:'||rec_cus.account_type 
+  ||', State:'||rec_cus.state);
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+CustomerID:80001, Customer Name:B and B, Account ID:A-11101, Account Type:PR, State:AK
+CUST_ID not valid.
+CustomerID:99999, Customer Name:XXXXX, Account ID:A-11110, Account Type:XX, State:xx
+
+SQL> Spool OFF

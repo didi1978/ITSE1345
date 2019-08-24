@@ -1,0 +1,202 @@
+SQL> CREATE OR REPLACE PROCEDURE bb_jobtest(job IN NUMBER,
+    msg IN VARCHAR2)
+IS
+BEGIN
+  INSERT INTO bb_jobq (jobnum, msg) VALUES (job,msg);
+  COMMIT;
+END;
+/
+
+Procedure BB_JOBTEST compiled
+
+SQL> SELECT object_name,status
+FROM user_objects
+WHERE object_type='PROCEDURE'
+ORDER BY object_name;
+
+OBJECT_NAME                                                                                                                      STATUS
+-------------------------------------------------------------------------------------------------------------------------------- -------
+BASKET_ADD_SP                                                                                                                    INVALID
+BASKET_CONFIRM_SP                                                                                                                INVALID
+BASK_CALC_SP                                                                                                                     VALID  
+BB_JOBTEST                                                                                                                       VALID  
+BSK_QUERY_SP                                                                                                                     VALID  
+DEPTREE_FILL                                                                                                                     VALID  
+DYN_DML2_SP                                                                                                                      VALID  
+DYN_DML_SP                                                                                                                       VALID  
+DYN_QUERY3_SP                                                                                                                    VALID  
+DYN_QUERYL_SP                                                                                                                    VALID  
+EMP_SP                                                                                                                           VALID  
+
+OBJECT_NAME                                                                                                                      STATUS
+-------------------------------------------------------------------------------------------------------------------------------- -------
+EXCEPT_LOG_SP                                                                                                                    VALID  
+INSERT_IMAGE_SP                                                                                                                  VALID  
+LOCAL_NAMED                                                                                                                      VALID  
+LOGIN2_SP                                                                                                                        VALID  
+LOGIN_SP                                                                                                                         VALID  
+MEMBER_CK_SP                                                                                                                     VALID  
+ORDER_TOTAL_SP                                                                                                                   VALID  
+ORDER_TOTAL_SP2                                                                                                                  VALID  
+PHONE_FMT_SP                                                                                                                     VALID  
+PROD_ADD_SP                                                                                                                      INVALID
+PROD_NAME_SP                                                                                                                     INVALID
+
+OBJECT_NAME                                                                                                                      STATUS
+-------------------------------------------------------------------------------------------------------------------------------- -------
+PROMO_SHIP_SP                                                                                                                    INVALID
+PROMO_TEST_SP                                                                                                                    VALID  
+RUN_NOCOPY_SP                                                                                                                    VALID  
+SHIP_COST_SP                                                                                                                     VALID  
+STATUS_CHECK_SP                                                                                                                  INVALID
+STATUS_SHIP_SP                                                                                                                   INVALID
+STATUS_SP                                                                                                                        VALID  
+STOCK_CK_SP                                                                                                                      INVALID
+TAX_COST_SP                                                                                                                      INVALID
+TC_TEST_SP1                                                                                                                      VALID  
+TC_TEST_SP2                                                                                                                      VALID  
+
+OBJECT_NAME                                                                                                                      STATUS
+-------------------------------------------------------------------------------------------------------------------------------- -------
+TEST_NOCOPY_SP                                                                                                                   VALID  
+
+ 34 rows selected 
+
+SQL> /
+SQL> ALTER TABLE bb_jobq MODIFY (msg VARCHAR2(30));
+
+Table BB_JOBQ altered.
+
+SQL> /
+SQL> SELECT object_name,status
+FROM user_objects
+WHERE object_type='PROCEDURE'
+ORDER BY object_name;
+
+OBJECT_NAME                                                                                                                      STATUS
+-------------------------------------------------------------------------------------------------------------------------------- -------
+BASKET_ADD_SP                                                                                                                    INVALID
+BASKET_CONFIRM_SP                                                                                                                INVALID
+BASK_CALC_SP                                                                                                                     VALID  
+BB_JOBTEST                                                                                                                       INVALID
+BSK_QUERY_SP                                                                                                                     VALID  
+DEPTREE_FILL                                                                                                                     VALID  
+DYN_DML2_SP                                                                                                                      VALID  
+DYN_DML_SP                                                                                                                       VALID  
+DYN_QUERY3_SP                                                                                                                    VALID  
+DYN_QUERYL_SP                                                                                                                    VALID  
+EMP_SP                                                                                                                           VALID  
+
+OBJECT_NAME                                                                                                                      STATUS
+-------------------------------------------------------------------------------------------------------------------------------- -------
+EXCEPT_LOG_SP                                                                                                                    VALID  
+INSERT_IMAGE_SP                                                                                                                  VALID  
+LOCAL_NAMED                                                                                                                      VALID  
+LOGIN2_SP                                                                                                                        VALID  
+LOGIN_SP                                                                                                                         VALID  
+MEMBER_CK_SP                                                                                                                     VALID  
+ORDER_TOTAL_SP                                                                                                                   VALID  
+ORDER_TOTAL_SP2                                                                                                                  VALID  
+PHONE_FMT_SP                                                                                                                     VALID  
+PROD_ADD_SP                                                                                                                      INVALID
+PROD_NAME_SP                                                                                                                     INVALID
+
+OBJECT_NAME                                                                                                                      STATUS
+-------------------------------------------------------------------------------------------------------------------------------- -------
+PROMO_SHIP_SP                                                                                                                    INVALID
+PROMO_TEST_SP                                                                                                                    VALID  
+RUN_NOCOPY_SP                                                                                                                    VALID  
+SHIP_COST_SP                                                                                                                     VALID  
+STATUS_CHECK_SP                                                                                                                  INVALID
+STATUS_SHIP_SP                                                                                                                   INVALID
+STATUS_SP                                                                                                                        VALID  
+STOCK_CK_SP                                                                                                                      INVALID
+TAX_COST_SP                                                                                                                      INVALID
+TC_TEST_SP1                                                                                                                      VALID  
+TC_TEST_SP2                                                                                                                      VALID  
+
+OBJECT_NAME                                                                                                                      STATUS
+-------------------------------------------------------------------------------------------------------------------------------- -------
+TEST_NOCOPY_SP                                                                                                                   VALID  
+
+ 34 rows selected 
+
+SQL> /
+SQL> /*Create an anonymous block, using DBMS_DDL.ALTER_COMPILE to compile
+all INVLID PROCEDUREs using a cursor.*/
+SQL> DECLARE
+  CURSOR invalid_cur
+  IS
+    SELECT object_name
+    FROM user_objects
+    WHERE object_type='PROCEDURE'
+    AND status       ='INVALID';
+  rec_invalid invalid_cur%ROWTYPE;
+BEGIN
+  OPEN invalid_cur;
+  LOOP
+  FETCH invalid_cur INTO rec_invalid;
+  EXIT WHEN invalid_cur%NOTFOUND;
+  DBMS_DDL.ALTER_COMPILE('PROCEDURE','BREWBEANS',rec_invalid.object_name);
+  END LOOP;
+  CLOSE invalid_cur;
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+SQL> SELECT object_name,status
+FROM user_objects
+WHERE object_type='PROCEDURE'
+ORDER BY object_name;
+
+OBJECT_NAME                                                                                                                      STATUS
+-------------------------------------------------------------------------------------------------------------------------------- -------
+BASKET_ADD_SP                                                                                                                    VALID  
+BASKET_CONFIRM_SP                                                                                                                VALID  
+BASK_CALC_SP                                                                                                                     VALID  
+BB_JOBTEST                                                                                                                       VALID  
+BSK_QUERY_SP                                                                                                                     VALID  
+DEPTREE_FILL                                                                                                                     VALID  
+DYN_DML2_SP                                                                                                                      VALID  
+DYN_DML_SP                                                                                                                       VALID  
+DYN_QUERY3_SP                                                                                                                    VALID  
+DYN_QUERYL_SP                                                                                                                    VALID  
+EMP_SP                                                                                                                           VALID  
+
+OBJECT_NAME                                                                                                                      STATUS
+-------------------------------------------------------------------------------------------------------------------------------- -------
+EXCEPT_LOG_SP                                                                                                                    VALID  
+INSERT_IMAGE_SP                                                                                                                  VALID  
+LOCAL_NAMED                                                                                                                      VALID  
+LOGIN2_SP                                                                                                                        VALID  
+LOGIN_SP                                                                                                                         VALID  
+MEMBER_CK_SP                                                                                                                     VALID  
+ORDER_TOTAL_SP                                                                                                                   VALID  
+ORDER_TOTAL_SP2                                                                                                                  VALID  
+PHONE_FMT_SP                                                                                                                     VALID  
+PROD_ADD_SP                                                                                                                      VALID  
+PROD_NAME_SP                                                                                                                     VALID  
+
+OBJECT_NAME                                                                                                                      STATUS
+-------------------------------------------------------------------------------------------------------------------------------- -------
+PROMO_SHIP_SP                                                                                                                    VALID  
+PROMO_TEST_SP                                                                                                                    VALID  
+RUN_NOCOPY_SP                                                                                                                    VALID  
+SHIP_COST_SP                                                                                                                     VALID  
+STATUS_CHECK_SP                                                                                                                  VALID  
+STATUS_SHIP_SP                                                                                                                   VALID  
+STATUS_SP                                                                                                                        VALID  
+STOCK_CK_SP                                                                                                                      VALID  
+TAX_COST_SP                                                                                                                      VALID  
+TC_TEST_SP1                                                                                                                      VALID  
+TC_TEST_SP2                                                                                                                      VALID  
+
+OBJECT_NAME                                                                                                                      STATUS
+-------------------------------------------------------------------------------------------------------------------------------- -------
+TEST_NOCOPY_SP                                                                                                                   VALID  
+
+ 34 rows selected 
+
+SQL> /
+SQL> SPOOL OFF

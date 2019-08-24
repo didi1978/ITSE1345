@@ -1,0 +1,48 @@
+SQL> CREATE OR REPLACE FUNCTION ck_sale_sf(
+    p_date    IN bb_product.salestart%type,
+    p_product IN bb_product.idproduct%Type)
+  RETURN VARCHAR2
+IS
+  lv_startdate bb_product.salestart%type;
+  lv_enddate bb_product.saleend%type;
+  lv_status VARCHAR2(20);
+BEGIN
+  SELECT salestart,
+    saleend
+  INTO lv_startdate,
+    lv_enddate
+  FROM bb_product
+  WHERE idproduct           =p_product;
+  IF TO_CHAR(lv_startdate) <= TO_CHAR(p_date) 
+      AND TO_CHAR(p_date) <= TO_CHAR(lv_enddate) THEN
+    lv_status              :='ON SALE!';
+  ELSE
+    lv_status :='Great Deal!';
+  END IF;
+RETURN lv_status;
+END ck_sale_sf;
+/
+
+Function CK_SALE_SF compiled
+
+SQL> SET SERVEROUTPUT ON
+SQL> BEGIN
+  DBMS_OUTPUT.PUT_LINE('Product ID: 6 is '||CK_SALE_SF(p_date=>'10-JUN-12',p_product=>6));
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+Product ID: 6 is ON SALE!
+
+SQL> SET SERVEROUTPUT ON
+SQL> BEGIN
+  DBMS_OUTPUT.PUT_LINE('Product ID: 6 is '||CK_SALE_SF(p_date=>'19-JUN-12',p_product=>6));
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+Product ID: 6 is Great Deal!
+
+SQL> Spool OFF

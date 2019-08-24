@@ -1,0 +1,49 @@
+SQL> CREATE OR REPLACE PACKAGE tax_rate_pkg
+IS
+  CURSOR cur_tax
+  IS
+    SELECT taxrate, state FROM bb_tax;
+  FUNCTION tax_pf(
+      p_state BB_TAX.STATE%TYPE)
+    RETURN BB_TAX.TAXRATE%TYPE;
+END tax_rate_pkg;
+/
+
+Package TAX_RATE_PKG compiled
+
+SQL> CREATE OR REPLACE PACKAGE BODY tax_rate_pkg
+IS
+  FUNCTION tax_pf(
+      p_state BB_TAX.STATE%TYPE)
+    RETURN BB_TAX.TAXRATE%TYPE
+  IS
+    p_taxrate BB_TAX.TAXRATE%TYPE:=0.00;
+  BEGIN
+    FOR rec_tax IN cur_tax
+    LOOP
+      IF rec_tax.state=p_state THEN
+        p_taxrate    :=rec_tax.taxrate;
+      END IF;
+    END LOOP;
+    RETURN p_taxrate;
+  END tax_pf;
+END tax_rate_pkg;
+/
+
+Package body TAX_RATE_PKG compiled
+
+SQL> SET SERVEROUTPUT ON
+SQL> DECLARE
+  lv_state BB_TAX.STATE%TYPE:='NC';
+  lv_rate BB_TAX.TAXRATE%TYPE;
+BEGIN
+  lv_rate :=TAX_RATE_PKG.TAX_PF(lv_state);
+  DBMS_OUTPUT.PUT_LINE('State of '||lv_state||', tax rate: '||lv_rate);
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+State of NC, tax rate: .03
+
+SQL> Spool OFF

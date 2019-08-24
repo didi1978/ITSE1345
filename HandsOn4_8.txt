@@ -1,0 +1,79 @@
+SQL> SET serveroutput ON
+SQL> DECLARE
+  CURSOR cur_sal IS
+    SELECT EMPNO, sal*12 AS annual_sal,
+      (
+      CASE
+        WHEN sal*12*0.06 >2000
+        THEN 2000
+        ELSE sal*12*0.06
+      END) AS propos_raise
+    FROM EMP
+    WHERE job != 'PRESIDENT';
+    new_sal NUMBER (8,2);
+    old_overhead NUMBER (12,2):=0;
+    new_overhead NUMBER (12,2):=0;
+    cost_incre   NUMBER (12,2);
+BEGIN
+  FOR L_IDX IN cur_sal
+  LOOP
+    new_sal := (L_IDX.annual_sal + L_IDX.propos_raise);
+    old_overhead := (old_overhead + L_IDX.annual_sal);
+    new_overhead := (new_overhead + new_sal);
+    UPDATE EMP
+      SET SAL = new_sal/12 WHERE EMPNO = L_IDX.EMPNO;
+    DBMS_OUTPUT.PUT_LINE('Employee#'||L_IDX.EMPNO||', Current Annual Salary: '||L_IDX.annual_sal||', Raise: '||L_IDX.propos_raise||', Proposed New Salary: '||new_sal);
+  END LOOP;
+  cost_incre := (new_overhead - old_overhead);
+  DBMS_OUTPUT.PUT_LINE('Total increased overhead cost: '||cost_incre);
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+Employee#7698, Current Annual Salary: 34200, Raise: 2000, Proposed New Salary: 36200
+Employee#7782, Current Annual Salary: 29400, Raise: 1764, Proposed New Salary: 31164
+Employee#7566, Current Annual Salary: 35700, Raise: 2000, Proposed New Salary: 37700
+Employee#7788, Current Annual Salary: 36000, Raise: 2000, Proposed New Salary: 38000
+Employee#7902, Current Annual Salary: 36000, Raise: 2000, Proposed New Salary: 38000
+Employee#7369, Current Annual Salary: 9600, Raise: 576, Proposed New Salary: 10176
+Employee#7499, Current Annual Salary: 19200, Raise: 1152, Proposed New Salary: 20352
+Employee#7521, Current Annual Salary: 15000, Raise: 900, Proposed New Salary: 15900
+Employee#7654, Current Annual Salary: 15000, Raise: 900, Proposed New Salary: 15900
+Employee#7844, Current Annual Salary: 18000, Raise: 1080, Proposed New Salary: 19080
+Employee#7876, Current Annual Salary: 13200, Raise: 792, Proposed New Salary: 13992
+Employee#7900, Current Annual Salary: 11400, Raise: 684, Proposed New Salary: 12084
+Employee#7934, Current Annual Salary: 15600, Raise: 936, Proposed New Salary: 16536
+Total increased overhead cost: 16784
+
+SQL> COMMIT;
+
+Commit complete.
+
+SQL> /
+SQL> Select * from EMP;
+
+     EMPNO ENAME      JOB              MGR HIREDATE         SAL       COMM     DEPTNO
+---------- ---------- --------- ---------- --------- ---------- ---------- ----------
+      7839 KING       PRESIDENT            17-NOV-81       5000                    10
+      7698 BLAKE      MANAGER         7839 01-MAY-81    3016.67                    30
+      7782 CLARK      MANAGER         7839 09-JUN-81       2597                    10
+      7566 JONES      MANAGER         7839 02-APR-81    3141.67                    20
+      7788 SCOTT      ANALYST         7566 09-DEC-82    3166.67                    20
+      7902 FORD       ANALYST         7566 03-DEC-81    3166.67                    20
+      7369 SMITH      CLERK           7902 17-DEC-80        848                    20
+      7499 ALLEN      SALESMAN        7698 20-FEB-81       1696        300         30
+      7521 WARD       SALESMAN        7698 22-FEB-81       1325        500         30
+      7654 MARTIN     SALESMAN        7698 28-SEP-81       1325       1400         30
+      7844 TURNER     SALESMAN        7698 08-SEP-81       1590          0         30
+
+     EMPNO ENAME      JOB              MGR HIREDATE         SAL       COMM     DEPTNO
+---------- ---------- --------- ---------- --------- ---------- ---------- ----------
+      7876 ADAMS      CLERK           7788 12-JAN-83       1166                    20
+      7900 JAMES      CLERK           7698 03-DEC-81       1007                    30
+      7934 MILLER     CLERK           7782 23-JAN-82       1378                    10
+
+ 14 rows selected 
+
+SQL> /
+SQL> SPOOL OFF

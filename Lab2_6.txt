@@ -1,0 +1,40 @@
+SQL> SET SERVEROUTPUT ON
+SQL> DECLARE
+TYPE tbstu
+IS
+  TABLE OF student%rowtype;
+  stu_table tbstu;
+  instate  NUMBER :=0;
+  outstate NUMBER :=0;
+BEGIN
+  SELECT * bulk collect INTO stu_table FROM student;
+  FOR i IN 1..stu_table.count LOOP
+    IF stu_table(i).home_state='TX' THEN
+      instate:=instate+1;
+      SYS.DBMS_OUTPUT.PUT_LINE('Student '||stu_table(i).f_name||' '||stu_table(i).l_name||' is in state.');
+    ELSE
+      outstate:=outstate+1;
+      SYS.DBMS_OUTPUT.PUT_LINE('Student '||stu_table(i).f_name||' '||stu_table(i).l_name||' is out of state.');
+    END IF;
+  END LOOP;
+  DBMS_OUTPUT.PUT_LINE(instate||' are in state students');
+  DBMS_OUTPUT.PUT_LINE(outstate||' are out of state students');
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+Student Peter Smith is in state.
+Student Sam Jones is in state.
+Student Amy Peters is out of state.
+Student John Johnson is out of state.
+Student Alton Penders is out of state.
+Student Diane Allen is out of state.
+Student Jennifer  Gill is in state.
+Student Roberta Johns is in state.
+Student Paul Wier is out of state.
+Student Richard Evans is in state.
+5 are in state students
+5 are out of state students
+
+SQL> Spool OFF

@@ -1,0 +1,59 @@
+SQL> CREATE OR REPLACE PROCEDURE basket_confirm_sp(
+    p_basketid IN bb_basket.idbasket%type,
+    p_subttl   IN bb_basket.subtotal%type,
+    p_ship     IN bb_basket.shipping%type,
+    p_tax      IN bb_basket.tax%type,
+    p_ttl      IN bb_basket.total%type)
+IS
+BEGIN
+  UPDATE bb_basket
+  SET subtotal  =p_subttl,
+    shipping    =p_ship,
+    tax         =p_tax,
+    total       =p_ttl,
+    orderplaced =1
+  WHERE idbasket=p_basketid;
+END basket_confirm_sp;
+/
+
+Procedure BASKET_CONFIRM_SP compiled
+
+SQL> Insert into bb_basket(IDBASKET,QUANTITY,IDSHOPPER, 
+                      ORDERPLACED, SUBTOTAL, TOTAL, 
+                      SHIPPING, TAX, DTCREATED, PROMO) 
+                values(17,2,22,0,0,0,0,0,'28-FEB-12',0);
+
+1 row inserted.
+
+SQL> Insert into bb_basketitem(IDBASKETITEM, IDPRODUCT,PRICE, 
+                          QUANTITY, IDBASKET, OPTION1, OPTION2) 
+                values(44,7,10.8,3,17,2,3);
+
+1 row inserted.
+
+SQL> Insert into bb_basketitem(IDBASKETITEM, IDPRODUCT,PRICE, 
+                          QUANTITY, IDBASKET, OPTION1, OPTION2) 
+                values(45,8,10.8,3,17,2,3);
+
+1 row inserted.
+
+SQL> COMMIT;
+
+Commit complete.
+
+SQL> /
+SQL> CALL basket_confirm_sp(17,64.80,8.00,1.94,74.74);
+
+Call completed.
+
+SQL> /
+SQL> Select subtotal, shipping, tax,total,orderplaced
+from bb_basket
+where idbasket=17;
+
+  SUBTOTAL   SHIPPING        TAX      TOTAL ORDERPLACED
+---------- ---------- ---------- ---------- -----------
+      64.8          8       1.94      74.74           1
+
+SQL> /
+SQL> spool OFF

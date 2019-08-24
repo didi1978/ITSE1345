@@ -1,0 +1,217 @@
+SQL> SET DEFINE OFF
+SQL> CREATE TABLE STUDENT
+  (
+    STU_ID     NUMBER(5) CONSTRAINT student_Stuid_pk PRIMARY KEY,
+    L_NAME     VARCHAR2 (20)CONSTRAINT student_lname_nn NOT NULL,
+    F_NAME     VARCHAR2 (20),
+    M_NAME     VARCHAR2 (10),
+    GENDER     CHAR(2),
+    MAJOR      VARCHAR2 (20),
+    HOME_STATE CHAR(4)
+  );
+
+Table STUDENT created.
+
+SQL> /
+SQL> CREATE TABLE COURSE
+  (
+    CRSE_ID VARCHAR2(10) CONSTRAINT course_crseid_pk PRIMARY KEY,
+    SEC_nm  NUMBER (3) CONSTRAINT course_secnm_nn NOT NULL,
+    C_name  VARCHAR2(30),
+    C_Desc  VARCHAR2 (120)
+  );
+
+Table COURSE created.
+
+SQL> /
+SQL> CREATE TABLE STU_CRSE
+  (
+    STU_ID  NUMBER(5)CONSTRAINT stucrse_stuid_fk REFERENCES STUDENT(STU_ID),
+    CRSE_ID VARCHAR2(10)CONSTRAINT stucrse_crsid_fk REFERENCES COURSE(CRSE_ID),
+    SEC_nm  NUMBER (3)  CONSTRAINT stucrse_secnm_nn NOT NULL,
+    PRIMARY KEY(STU_ID,CRSE_ID,SEC_nm)
+  );
+
+Table STU_CRSE created.
+
+SQL> /
+SQL> INSERT INTO STUDENT Values (10001,'Smith','Peter','M','M','Math','TX');
+
+1 row inserted.
+
+SQL> INSERT INTO STUDENT Values (10002,'Jones','Sam','A','M','English','TX');
+
+1 row inserted.
+
+SQL> INSERT INTO STUDENT Values (10003,'Peters','Amy','A','F','English','ME');
+
+1 row inserted.
+
+SQL> INSERT INTO STUDENT Values (10004,'Johnson','John','J','M','CompSci','CA');
+
+1 row inserted.
+
+SQL> INSERT INTO STUDENT Values (10005,'Penders','Alton','P','F','Math','GA');
+
+1 row inserted.
+
+SQL> INSERT INTO STUDENT Values (10006,'Allen','Diane','J','F','Geography','MINN');
+
+1 row inserted.
+
+SQL> INSERT INTO STUDENT Values (10007,'Gill','Jennifer ',NULL,'F','CompSci','TX');
+
+1 row inserted.
+
+SQL> INSERT INTO STUDENT Values (10008,'Johns','Roberta',NULL,'F','CompSci','TX');
+
+1 row inserted.
+
+SQL> INSERT INTO STUDENT Values (10009,'Wier','Paul',NULL,'M','Math','AL');
+
+1 row inserted.
+
+SQL> INSERT INTO STUDENT Values (10010,'Evans','Richard',NULL,'M','English','TX');
+
+1 row inserted.
+
+SQL> /
+SQL> INSERT INTO COURSE Values ('COSC1300',1,'Intro to Comp.','First Computer Course');
+
+1 row inserted.
+
+SQL> INSERT INTO COURSE Values ('ITSE2309',1,'Intro to DB','First Database Course');
+
+1 row inserted.
+
+SQL> INSERT INTO COURSE Values ('GEOG1791',2,'World Geography','Second Geography Course');
+
+1 row inserted.
+
+SQL> INSERT INTO COURSE Values ('COSC1315',1,'Intro to Prog.','Second Computer Course');
+
+1 row inserted.
+
+SQL> INSERT INTO COURSE Values ('ITSE1345',1,'Intro to DB Prog.','Second Database Course');
+
+1 row inserted.
+
+SQL> INSERT INTO COURSE Values ('ENGL2617',2,'English Literature','Second English Course');
+
+1 row inserted.
+
+SQL> INSERT INTO COURSE Values ('MATH1101',1,'Calculus 1','Second Math Course');
+
+1 row inserted.
+
+SQL> INSERT INTO COURSE Values ('ENGL1001',1,'American Literature','First English Course');
+
+1 row inserted.
+
+SQL> INSERT INTO COURSE Values ('MATH1011',1,'Trig. & Algebra','First Math Course');
+
+1 row inserted.
+
+SQL> INSERT INTO COURSE Values ('GEOG1010',1,'Texas Geography','First Geography Course');
+
+1 row inserted.
+
+SQL> /
+SQL> INSERT INTO STU_CRSE Values (10001,'MATH1101',1);
+
+1 row inserted.
+
+SQL> INSERT INTO STU_CRSE Values (10002,'ENGL2617',2);
+
+1 row inserted.
+
+SQL> INSERT INTO STU_CRSE Values (10003,'ENGL1001',1);
+
+1 row inserted.
+
+SQL> INSERT INTO STU_CRSE Values (10003,'ENGL2617',2);
+
+1 row inserted.
+
+SQL> INSERT INTO STU_CRSE Values (10003,'GEOG1010',1);
+
+1 row inserted.
+
+SQL> INSERT INTO STU_CRSE Values (10004,'COSC1315',1);
+
+1 row inserted.
+
+SQL> INSERT INTO STU_CRSE Values (10005,'MATH1101',1);
+
+1 row inserted.
+
+SQL> INSERT INTO STU_CRSE Values (10006,'GEOG1010',1);
+
+1 row inserted.
+
+SQL> INSERT INTO STU_CRSE Values (10006,'GEOG1791',2);
+
+1 row inserted.
+
+SQL> INSERT INTO STU_CRSE Values (10007,'COSC1315',1);
+
+1 row inserted.
+
+SQL> INSERT INTO STU_CRSE Values (10007,'ITSE2309',1);
+
+1 row inserted.
+
+SQL> /
+SQL> Select * from Student;
+
+    STU_ID L_NAME               F_NAME               M_NAME     GE MAJOR                HOME
+---------- -------------------- -------------------- ---------- -- -------------------- ----
+     10001 Smith                Peter                M          M  Math                 TX  
+     10002 Jones                Sam                  A          M  English              TX  
+     10003 Peters               Amy                  A          F  English              ME  
+     10004 Johnson              John                 J          M  CompSci              CA  
+     10005 Penders              Alton                P          F  Math                 GA  
+     10006 Allen                Diane                J          F  Geography            MINN
+     10007 Gill                 Jennifer                        F  CompSci              TX  
+     10008 Johns                Roberta                         F  CompSci              TX  
+     10009 Wier                 Paul                            M  Math                 AL  
+     10010 Evans                Richard                         M  English              TX  
+
+ 10 rows selected 
+
+SQL> Select * from Course;
+
+CRSE_ID        SEC_NM C_NAME                         C_DESC                                                                                                                 
+---------- ---------- ------------------------------ ------------------------------------------------------------------------------------------------------------------------
+COSC1300            1 Intro to Comp.                 First Computer Course                                                                                                   
+ITSE2309            1 Intro to DB                    First Database Course                                                                                                   
+GEOG1791            2 World Geography                Second Geography Course                                                                                                 
+COSC1315            1 Intro to Prog.                 Second Computer Course                                                                                                  
+ITSE1345            1 Intro to DB Prog.              Second Database Course                                                                                                  
+ENGL2617            2 English Literature             Second English Course                                                                                                   
+MATH1101            1 Calculus 1                     Second Math Course                                                                                                      
+ENGL1001            1 American Literature            First English Course                                                                                                    
+MATH1011            1 Trig. & Algebra                First Math Course                                                                                                       
+GEOG1010            1 Texas Geography                First Geography Course                                                                                                  
+
+ 10 rows selected 
+
+SQL> Select * from Stu_crse;
+
+    STU_ID CRSE_ID        SEC_NM
+---------- ---------- ----------
+     10001 MATH1101            1
+     10002 ENGL2617            2
+     10003 ENGL1001            1
+     10003 ENGL2617            2
+     10003 GEOG1010            1
+     10004 COSC1315            1
+     10005 MATH1101            1
+     10006 GEOG1010            1
+     10006 GEOG1791            2
+     10007 COSC1315            1
+     10007 ITSE2309            1
+
+ 11 rows selected 
+
+SQL> Spool OFF

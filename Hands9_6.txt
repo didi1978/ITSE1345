@@ -1,0 +1,75 @@
+SQL> CREATE OR REPLACE TRIGGER bb_prodidchg_trg BEFORE
+  UPDATE OF IDPRODUCT ON BB_PRODUCT FOR EACH ROW BEGIN
+  UPDATE BB_BASKETITEM
+  SET IDPRODUCT   = :NEW.IDPRODUCT
+  WHERE IDPRODUCT = :OLD.IDPRODUCT;
+  UPDATE BB_PRODUCTOPTION
+  SET IDPRODUCT   = :NEW.IDPRODUCT
+  WHERE IDPRODUCT = :OLD.IDPRODUCT;
+END;
+/
+
+Trigger BB_PRODIDCHG_TRG compiled
+
+SQL> SELECT IDBASKET, IDPRODUCT FROM BB_BASKETITEM WHERE IDPRODUCT = 7;
+
+  IDBASKET  IDPRODUCT
+---------- ----------
+         5          7
+         7          7
+         8          7
+         9          7
+        12          7
+        15          7
+        16          7
+
+ 7 rows selected 
+
+SQL> SELECT IDPRODUCTOPTION, IDPRODUCT FROM BB_PRODUCTOPTION WHERE IDPRODUCT = 7;
+
+IDPRODUCTOPTION  IDPRODUCT
+--------------- ----------
+              9          7
+             10          7
+             11          7
+             12          7
+
+SQL> UPDATE BB_PRODUCT SET IDPRODUCT = 22 WHERE IDPRODUCT =7;
+
+1 row updated.
+
+SQL> SELECT IDBASKET, IDPRODUCT FROM BB_BASKETITEM WHERE IDPRODUCT = 22;
+
+  IDBASKET  IDPRODUCT
+---------- ----------
+         5         22
+         7         22
+         8         22
+         9         22
+        12         22
+        15         22
+        16         22
+
+ 7 rows selected 
+
+SQL> SELECT IDPRODUCTOPTION, IDPRODUCT FROM BB_PRODUCTOPTION WHERE IDPRODUCT = 22;
+
+IDPRODUCTOPTION  IDPRODUCT
+--------------- ----------
+              9         22
+             10         22
+             11         22
+             12         22
+
+SQL> /
+SQL> ROLLBACK;
+
+Rollback complete.
+
+SQL> /
+SQL> ALTER TRIGGER bb_discount_trg DISABLE;
+
+Trigger BB_DISCOUNT_TRG altered.
+
+SQL> /
+SQL> Spool OFF

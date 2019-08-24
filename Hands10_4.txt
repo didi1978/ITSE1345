@@ -1,0 +1,35 @@
+SQL> DECLARE
+CURSOR exp_cur
+IS
+  SELECT idproduct,
+    productname,
+    price,
+    type,
+    stock,
+    ordered,
+    reorder
+  FROM bb_product
+  ORDER BY idproduct;
+  lv_file UTL_FILE.FILE_TYPE;
+BEGIN
+  lv_file :=UTL_FILE.FOPEN('ORA_FILES','prod_ext.txt','w');
+  FOR exp_rec IN exp_cur
+  LOOP
+    UTL_FILE.PUT_LINE (lv_file, exp_rec.idproduct
+                        ||','|| exp_rec.productname
+                        ||','|| exp_rec.price
+                        ||','|| exp_rec.type
+                        ||','|| exp_rec.stock
+                        ||','|| exp_rec.ordered
+                        ||','|| exp_rec.reorder);
+  END LOOP;
+  UTL_FILE.FCLOSE(lv_file);
+EXCEPTION
+WHEN OTHERS THEN
+  DBMS_OUTPUT.PUT_LINE(SQLERRM);
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+SQL> SPOOL OFF

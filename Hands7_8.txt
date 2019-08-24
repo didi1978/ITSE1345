@@ -1,0 +1,59 @@
+SQL> CREATE OR REPLACE PACKAGE login_pkg
+IS
+  pv_log_time TIMESTAMP;
+  pv_id_num   NUMBER(3);
+  FUNCTION login_ck_pf(
+      p_user IN VARCHAR2,
+      p_pass IN VARCHAR2)
+    RETURN CHAR;
+END;
+/
+
+Package LOGIN_PKG compiled
+
+SQL> CREATE OR REPLACE PACKAGE BODY login_pkg
+IS
+  FUNCTION login_ck_pf(
+      p_user IN VARCHAR2,
+      p_pass IN VARCHAR2)
+    RETURN CHAR
+  IS
+    lv_ck_txt CHAR(1) := 'N';
+    lv_id_num NUMBER(5);
+  BEGIN
+    SELECT idShopper
+    INTO lv_id_num
+    FROM bb_shopper
+    WHERE username = p_user
+    AND password   = p_pass;
+    lv_ck_txt     := 'Y';
+    pv_id_num     := lv_id_num;
+    RETURN lv_ck_txt;
+  EXCEPTION
+  WHEN NO_DATA_FOUND THEN
+    RETURN lv_ck_txt;
+  END login_ck_pf;
+BEGIN
+  SELECT systimestamp INTO pv_log_time FROM dual;
+  DBMS_OUTPUT.PUT_LINE('Time: '||pv_log_time);
+END login_pkg;
+/
+
+Package body LOGIN_PKG compiled
+
+SQL> DECLARE
+  lv_user bb_shopper.username%type:='gma1';
+  lv_pw bb_shopper.password%type  :='goofy';
+  lv_logon CHAR(1);
+BEGIN
+  lv_logon :=login_pkg.login_ck_pf(lv_user, lv_pw);
+  DBMS_OUTPUT.PUT_LINE(lv_logon);
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+Time: 29-JUN-19 12.02.56.243000 PM
+Y
+
+SQL> Spool OFF

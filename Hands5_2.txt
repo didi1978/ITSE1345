@@ -1,0 +1,41 @@
+SQL> CREATE OR REPLACE PROCEDURE prod_add_sp(
+    p_prodname IN BB_PRODUCT.PRODUCTNAME%TYPE,
+    p_desc     IN BB_PRODUCT.DESCRIPTION%TYPE,
+    p_image    IN BB_PRODUCT.PRODUCTIMAGE%TYPE,
+    p_price    IN BB_PRODUCT.PRICE%TYPE,
+    p_status   IN BB_PRODUCT.ACTIVE%TYPE)
+IS
+BEGIN
+  INSERT INTO BB_PRODUCT
+    (idproduct,productname,description,productimage,price,ACTIVE)
+    VALUES
+    (BB_PRODID_SEQ.NEXTVAL,p_prodname,p_desc,p_image,p_price,p_status);
+  COMMIT;
+END prod_add_sp;
+/
+
+Procedure PROD_ADD_SP compiled
+SQL> SET SERVEROUTPUT ON
+SQL> EXECUTE prod_add_sp('Roasted Blend','Well-balanced mix of roasted beans, a medium body','roasted.jpg',9.5,1)
+
+PL/SQL procedure successfully completed.
+
+SQL> /
+SQL> Select * from BB_PRODUCT ORDER BY IDPRODUCT;
+
+ IDPRODUCT PRODUCTNAME               DESCRIPTION                                                                                          PRODUCTIMAGE                   PRICE SALESTART SALEEND    SALEPRICE     ACTIVE   FEATURED FEATURESTART FEATUREEND T IDDEPARTMENT      STOCK    ORDERED    REORDER
+---------- ------------------------- ---------------------------------------------------------------------------------------------------- ------------------------- ---------- --------- --------- ---------- ---------- ---------- ------------ ---------- - ------------ ---------- ---------- ----------
+         1 CapressoBar Model #351    CapressoBar Model#388                                                                                capresso.gif                   99.99                                         1                                    E            2         23          0         12
+         2 Capresso Ultima           Coffee and Espresso and Cappuccino Machine. Brews from one espresso to two six ounce cups of coffee  capresso2.gif                 129.99                                         1                                    E            2         15          0          9
+         3 Eileen 4-cup French Press A unique coffeemaker from those proud craftsmen in windy Normandy.                                   frepress.gif                    32.5                                         1                                    E            2         30          0         15
+         4 Coffee Grinder            Avoid blade grinders! This mill grinder allows you to choose a fine grind to a coarse grind.         grind.gif                       28.5                                         1                                    E            2         26          0         25
+         5 Sumatra                   Spicy and intense with herbal aroma.                                                                 sumatra.jpg                     10.5                                         1                                    C            1         41          0         45
+         6 Guatamala                 heavy body, spicy twist, aromatic and smokey flavor.                                                 Guatamala.jpg                     10                                         1                                    C            1         42          0         35
+         7 Columbia                  dry, nutty flavor and smoothness                                                                     columbia.jpg                    10.8                                         1                                    C            1         61          0         35
+         8 Brazil                    well-balanced mellow flavor, a medium body with hints of cocoa and a mild, nut-like aftertaste       brazil.jpg                      10.8                                         1                                    C            1         53          0         35
+         9 Ethiopia                  distinctive berry-like flavor and aroma, reminds many of a fruity, memorable wine.                   ethiopia.jpg                      10                                         1                                    C            1         54          0         35
+        10 Espresso                  dense, caramel-like sweetness with a soft acidity. Roasted somewhat darker than traditional Italian. espresso.jpg                      10                                         1                                    C            1         50         50         50
+        17 Roasted Blend             Well-balanced mix of roasted beans, a medium body                                                    roasted.jpg                      9.5                                         1                                                                                   
+
+ 11 rows selected 
+SQL> Spool off

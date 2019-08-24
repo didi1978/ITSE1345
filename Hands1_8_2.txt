@@ -1,0 +1,10 @@
+SQL> Describe Contacts;
+
+Name         Null     Type         
+------------ -------- ------------ 
+CON_ID       NOT NULL NUMBER(4)    
+COMPANY_NAME NOT NULL VARCHAR2(30) 
+E_MAIL                VARCHAR2(30) 
+LAST_DATE             DATE         
+CON_CNT               NUMBER(3)    
+SQL> Spool off

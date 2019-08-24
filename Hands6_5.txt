@@ -1,0 +1,59 @@
+SQL> CREATE OR REPLACE FUNCTION ord_ship_sf(
+    p_basketid IN NUMBER)
+  RETURN VARCHAR2
+IS
+  lv_msg VARCHAR2 (20);
+  p_orddt DATE;
+  p_shipdt DATE;
+  p_diff NUMBER (10);
+BEGIN
+  SELECT bs.dtstage, bb.dtordered
+  INTO p_shipdt, p_orddt
+  FROM bb_basketstatus bs JOIN bb_basket bb USING (idbasket)
+  WHERE bs.IDSTAGE = 5 AND IDBASKET  = p_basketid;
+  p_diff          :=p_shipdt-p_orddt;
+  IF p_diff       <= 1 THEN
+    lv_msg        :='OK';
+  ELSIF p_diff     >1 THEN
+    lv_msg        :='CHECK';
+  END IF;
+RETURN lv_msg;
+EXCEPTION
+WHEN NO_DATA_FOUND THEN
+  lv_msg:='Not Shipped';
+  Return lv_msg;
+END;
+/
+
+Function ORD_SHIP_SF compiled
+
+SQL> Column idbasket heading 'Basket_ID' format A20
+SQL> Column ord_ship_sf(idbasket) heading 'Shipment Audit' Format A30
+SQL> Select DISTINCT(idbasket), ord_ship_sf(idbasket)
+from bb_basket;
+
+           Basket_ID Shipment Audit               
+-------------------- ------------------------------
+                   3 CHECK                         
+                   4 OK                            
+                   5 Not Shipped                   
+                   6 Not Shipped                   
+                   7 Not Shipped                   
+                   8 Not Shipped                   
+                   9 Not Shipped                   
+                  10 Not Shipped                   
+                  11 Not Shipped                   
+                  12 Not Shipped                   
+                  13 Not Shipped                   
+
+           Basket_ID Shipment Audit               
+-------------------- ------------------------------
+                  14 Not Shipped                   
+                  15 Not Shipped                   
+                  16 Not Shipped                   
+                  17 Not Shipped                   
+
+ 15 rows selected 
+
+SQL> /
+SQL> Spool off

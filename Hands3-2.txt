@@ -1,0 +1,25 @@
+SQL> SET SERVEROUTPUT ON
+SQL> DECLARE
+  rec_ship bb_basketstatus%rowtype;
+  lv_bask_nm bb_basketstatus.idbasket%type :=3;
+BEGIN
+  SELECT *
+  INTO rec_ship
+  FROM bb_basketstatus
+  WHERE idbasket=lv_bask_nm
+  AND idstage   =5;
+  DBMS_OUTPUT.PUT_LINE('Date Shipped: '||rec_ship.dtstage);
+  DBMS_OUTPUT.PUT_LINE('Shipper: '||rec_ship.shipper);
+  DBMS_OUTPUT.PUT_LINE('Shipping#: '||rec_ship.shippingnum);
+  DBMS_OUTPUT.PUT_LINE('Notes: '||rec_ship.notes);
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+Date Shipped: 25-JAN-12
+Shipper: UPS
+Shipping#: ZW845584GD89H569
+Notes: Customer called to confirm shipment
+
+SQL> spool off

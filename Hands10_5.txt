@@ -1,0 +1,30 @@
+SQL> --Under Sys user.
+SQL> ALTER SYSTEM SET SMTP_OUT_SERVER = '127.0.0.1:25';
+
+System SET altered.
+
+SQL> /
+SQL> BEGIN
+  DBMS_NETWORK_ACL_ADMIN.CREATE_ACL (
+  acl =>'e-mailx.xml', 
+  description =>'Premission for e-mail server use', 
+  principal => 'BREWBEANS', is_grant => TRUE, 
+  Privilege => 'connect');
+  COMMIT;
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+SQL> BEGIN
+  DBMS_NETWORK_ACL_ADMIN.ASSIGN_ACL ( 
+  acl => 'e-mailx.xml',
+  host => '127.0.0.1',
+  lower_port => 25);
+  COMMIT;
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+SQL> Spool off

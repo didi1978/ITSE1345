@@ -1,0 +1,97 @@
+SQL> CREATE OR REPLACE PACKAGE order_info_pkg IS
+ FUNCTION ship_name_pf  
+   (p_basket IN NUMBER)
+   RETURN VARCHAR2;
+ PROCEDURE basket_info_pp
+  (p_basket IN NUMBER,
+   p_shop OUT NUMBER,
+   p_date OUT DATE);
+END;
+/
+
+Package ORDER_INFO_PKG compiled
+
+SQL> CREATE OR REPLACE PACKAGE BODY order_info_pkg IS
+ FUNCTION ship_name_pf  
+   (p_basket IN NUMBER)
+   RETURN VARCHAR2
+  IS
+   lv_name_txt VARCHAR2(30);
+ BEGIN
+  SELECT shipfirstname||' '||shiplastname
+   INTO lv_name_txt
+   FROM bb_basket
+   WHERE idBasket = p_basket;
+    IF lv_name_txt = ' ' THEN RETURN 'Ship name not available.';
+    ELSE Return lv_name_txt;
+    END IF;
+ EXCEPTION
+   WHEN NO_DATA_FOUND THEN
+     DBMS_OUTPUT.PUT_LINE('Invalid basket id');
+ END ship_name_pf;
+ PROCEDURE basket_info_pp
+  (p_basket IN NUMBER,
+   p_shop OUT NUMBER,
+   p_date OUT DATE)
+  IS
+ BEGIN
+   SELECT idshopper, dtordered
+    INTO p_shop, p_date
+    FROM bb_basket
+    WHERE idbasket = p_basket;
+ EXCEPTION
+   WHEN NO_DATA_FOUND THEN
+     DBMS_OUTPUT.PUT_LINE('Invalid basket id');
+ END basket_info_pp;
+END;
+/
+
+Package body ORDER_INFO_PKG compiled
+
+SQL> DECLARE
+  lv_shipname VARCHAR2(30);
+BEGIN
+  lv_shipname:= ORDER_INFO_PKG.ship_name_pf(p_basket=>12);
+  SYS.DBMS_OUTPUT.PUT_LINE (lv_shipname);
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+Ship name not available.
+
+SQL> SET SERVEROUTPUT ON
+SQL> DECLARE
+  lv_shipname VARCHAR2(30);
+  lv_basket bb_basket.idbasket%type :=12;
+  lv_shopper BB_BASKET.IDSHOPPER%Type;
+  lv_date bb_basket.dtordered%type;
+BEGIN
+  lv_shipname:= ORDER_INFO_PKG.ship_name_pf(p_basket=>12);
+  SYS.DBMS_OUTPUT.PUT_LINE (lv_shipname);
+  ORDER_INFO_PKG.BASKET_INFO_PP (lv_basket, lv_shopper, lv_date);
+  DBMS_OUTPUT.PUT_LINE('Basket ID: '||lv_basket);
+  DBMS_OUTPUT.PUT_LINE('Shopper ID: '||lv_shopper);
+  DBMS_OUTPUT.PUT_LINE('Order Date: '||lv_date);
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+Ship name not available.
+Basket ID: 12
+Shopper ID: 25
+Order Date: 19-FEB-12
+
+SQL> SET SERVEROUTPUT ON
+SQL> Column ORDER_INFO_PKG.SHIP_NAME_PF(idbasket) heading 'Ship Name' Format A30
+SQL> Select idbasket, idshopper, DTORDERED, ORDER_INFO_PKG.SHIP_NAME_PF(idbasket)
+from BB_BASKET
+WHERE idbasket = 12;
+
+  IDBASKET  IDSHOPPER DTORDERED Ship Name                    
+---------- ---------- --------- ------------------------------
+        12         25 19-FEB-12 Ship name not available.      
+
+SQL> /
+SQL> Spool OFF

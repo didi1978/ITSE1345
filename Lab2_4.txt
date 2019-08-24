@@ -1,0 +1,14 @@
+SQL> SET SERVEROUTPUT ON
+SQL> DECLARE
+  Stu_enroll NUMBER;
+BEGIN
+  SELECT COUNT(stu_id) INTO stu_enroll FROM Student;
+  DBMS_OUTPUT.put_line('Number of students found: '||stu_enroll);
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+Number of students found: 10
+
+SQL> Spool OFF

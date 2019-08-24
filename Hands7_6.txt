@@ -1,0 +1,24 @@
+SQL> CREATE OR REPLACE PACKAGE tax_rate_pkg
+IS
+  pv_tax_nc CONSTANT NUMBER:=0.035;
+  pv_tax_tx CONSTANT NUMBER:=0.05;
+  pv_tax_tn CONSTANT NUMBER:=0.02;
+END;
+/
+
+Package TAX_RATE_PKG compiled
+
+SQL> BEGIN
+  dbms_output.put_line(tax_rate_pkg.pv_tax_nc);
+  dbms_output.put_line(tax_rate_pkg.pv_tax_tx);
+  dbms_output.put_line(tax_rate_pkg.pv_tax_tn);
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+.035
+.05
+.02
+
+SQL> Spool OFF

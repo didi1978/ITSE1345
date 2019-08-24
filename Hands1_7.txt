@@ -1,0 +1,10 @@
+SQL> select idproduct, productname, price
+from bb_product
+where active=1 and price> (Select avg(price) from BB_product);
+
+ IDPRODUCT PRODUCTNAME                    PRICE
+---------- ------------------------- ----------
+         1 CapressoBar Model #351         99.99
+         2 Capresso Ultima               129.99
+
+SQL> spool off

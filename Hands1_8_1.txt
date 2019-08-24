@@ -1,0 +1,17 @@
+SQL> CREATE TABLE Contacts (
+    Con_id number(4),
+    Company_name varchar2(30),
+    E_mail varchar2(30),
+    Last_date date DEFAULT SYSDATE,
+    Con_cnt number(3),
+    CONSTRAINT Contacts_con_id_pk PRIMARY KEY (Con_id),
+    CONSTRAINT Contacts_con_cnt_ck CHECK (Con_cnt>0));
+
+Table CONTACTS created.
+
+SQL> Alter table Contacts
+modify (Company_name CONSTRAINT Contacts_Companyname_nn NOT NULL);
+
+Table CONTACTS altered.
+
+SQL> Spool off

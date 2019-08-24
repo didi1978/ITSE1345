@@ -1,0 +1,38 @@
+SQL> DECLARE
+  CURSOR cur_basket
+  IS
+    SELECT bi.idbasket,
+      bi.quantity,
+      p.stock
+    FROM BB_BASKETITEM bi
+    INNER JOIN BB_PRODUCT p USING (idproduct)
+    WHERE bi.idbasket=6;
+  TYPE type_basket IS RECORD
+  (
+    basket BB_BASKETITEM.IDBASKET%TYPE,
+    qty BB_BASKETITEM.quantity%TYPE,
+    stock BB_PRODUCT.STOCK%TYPE);
+  rec_basket type_basket;
+  lv_flag_txt CHAR(1) := 'Y';
+BEGIN
+  OPEN cur_basket;
+  LOOP
+    FETCH cur_basket INTO rec_basket;
+    EXIT WHEN cur_basket%NOTFOUND;
+    IF rec_basket.stock < rec_basket.qty THEN
+      lv_flag_txt      :='N';
+    END IF;
+  END LOOP;
+  CLOSE cur_basket;
+  IF lv_flag_txt='Y' THEN DBMS_OUTPUT.PUT_LINE ('All items in stock!');
+       END IF;
+  IF lv_flag_txt='N' THEN DBMS_OUTPUT.PUT_LINE ('All items not in stock!');
+       END IF;      
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+All items in stock!
+
+SQL> Spool off

@@ -1,0 +1,67 @@
+SQL> CREATE OR REPLACE FUNCTION date_ct_sf(
+    Date1 IN DATE,
+    date2 IN DATE)
+  RETURN INT
+IS
+  lv_count INT;
+BEGIN
+  IF date1   <date2 THEN
+    lv_count:=-1;
+  ELSIF date1=date2 THEN
+    lv_count:=0;
+  ELSIF date1>date2 THEN
+    lv_count:=1;
+  END IF;
+RETURN lv_count;
+END date_ct_sf;
+/
+
+Function DATE_CT_SF compiled
+
+SQL> SET SERVEROUTPUT ON
+SQL> DECLARE
+  lv_date1 DATE;
+  lv_date2 DATE;
+BEGIN
+  lv_date1 :='01-JUL-2019';
+  lv_date2 :='01-Jun-2019';
+  dbms_output.put_line('Date1: '||lv_date1||', Date2: '||lv_date2 
+  ||' in return '||date_ct_sf(lv_date1, lv_date2));
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+Date1: 01-JUL-19, Date2: 01-JUN-19 in return 1
+
+SQL> DECLARE
+  lv_date1 DATE;
+  lv_date2 DATE;
+BEGIN
+  lv_date1 :='01-JUL-2019';
+  lv_date2 :='01-JUL-2019';
+  dbms_output.put_line('Date1: '||lv_date1||', Date2: '||lv_date2 
+  ||' in return '||date_ct_sf(lv_date1, lv_date2));
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+Date1: 01-JUL-19, Date2: 01-JUL-19 in return 0
+
+SQL> DECLARE
+  lv_date1 DATE;
+  lv_date2 DATE;
+BEGIN
+  lv_date1 :='01-JUN-2019';
+  lv_date2 :='01-JUL-2019';
+  dbms_output.put_line('Date1: '||lv_date1||', Date2: '||lv_date2 
+  ||' in return '||date_ct_sf(lv_date1, lv_date2));
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+Date1: 01-JUN-19, Date2: 01-JUL-19 in return -1
+
+SQL> Spool OFF

@@ -1,0 +1,22 @@
+SQL> SET SERVEROUTPUT ON
+SQL> DECLARE
+  lv_bb_bkt BB_BASKET%ROWTYPE;
+BEGIN
+  SELECT * INTO lv_bb_bkt FROM BB_BASKET WHERE IDBASKET = 12;
+  DBMS_OUTPUT.put_line('Basket# '||lv_bb_bkt.idbasket);
+  DBMS_OUTPUT.put_line('Sub Total= '||lv_bb_bkt.subtotal);
+  DBMS_OUTPUT.put_line('Shipping Cost= '||lv_bb_bkt.shipping);
+  DBMS_OUTPUT.put_line('TAX= '||lv_bb_bkt.tax);
+  DBMS_OUTPUT.put_line('Total= '||lv_bb_bkt.total);
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+Basket# 12
+Sub Total= 72.4
+Shipping Cost= 8
+TAX= 3.26
+Total= 83.66
+
+SQL> spool OFF
